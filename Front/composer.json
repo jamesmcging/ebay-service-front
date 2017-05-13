@@ -1,0 +1,20 @@
+{
+    "name": "jamesmcg/ebay-front",
+    "description": "Thesis frontend for the ebay protoytype",
+    "type": "project",
+    "require": {
+        "slim/slim": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Front\\": "./"
+        }    
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "James McGing",
+            "email": "jamesmcging@gmail.com"
+        }
+    ]
+}
