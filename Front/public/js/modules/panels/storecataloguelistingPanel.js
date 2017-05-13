@@ -83,21 +83,22 @@ define(['jquery',
       app.objModel.objStoreCatalogueModel.getItemsFromAPI();
     });
     
-    nsc('.item_offset').on('click', function() {
+    nsc('.item_offset').off().on('click', function() {
       app.objModel.objStoreCatalogueModel.objFilters.nOffset = (nsc(this).val() * app.objModel.objStoreCatalogueModel.objFilters.nLimit);
     });
     
-    nsc('.pagination-link').on('click', function() {
+    nsc('.pagination-link').off().on('click', function() {
       app.objModel.objStoreCatalogueModel.objFilters.nOffset = nsc(this).data('noffset');
       app.objModel.objStoreCatalogueModel.getItemsFromAPI();
     });
     
     nsc(document).on('ebayCatalogueUpdated', function() {
-      console.log('store catalogue listing panel has noticed that the enay catalogue has updated');
+      console.log('store catalogue listing panel has noticed that the ebay catalogue has updated');
       var arrItems = app.objModel.objStoreCatalogueModel.objData.arrItems;
       for(var i in arrItems) {
         nsc('#storecatalogueactionbutton-' + arrItems[i].product_id).replaceWith(objStoreCatalogueListingPanel.getButtonMarkup(arrItems[i]));
       }
+      objStoreCatalogueListingPanel.setListeners();
     });
     
   };

@@ -43,7 +43,7 @@ define(['jquery',
     /* React to an existing offer in the offer listing table being clicked */
     nsc('.offer-existing').off().on('click', function() {
       var nOfferId = nsc(this).data('offerid');
-      var objOffer = app.objModel.objEbayOffersModel.objOffers[nOfferId];
+      var objOffer = app.objModel.objEbayOffersModel.getOfferById(nOfferId);
       nsc('#offer-details').replaceWith(objOffersPanel.getOfferDetailMarkup(objOffer));
       objOffersPanel.setListeners();
     });

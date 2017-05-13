@@ -222,7 +222,7 @@ define(['jquery',
   objEbayCatalogueListingPanel.getModalFooterMarkup = function() {
     var sProductCode = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
     var sHTML = '';
-    sHTML += '<button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Close</button>';
+    sHTML += '<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>';
     
     return sHTML;
   };

@@ -8,10 +8,10 @@ body {
 
 #main-alert-container {
   position: fixed;
-  top: 9%;
+  top: 60px;
   right: 0;
   left: 0;
-  min-height: 60px;
+  min-height: 70px;
   z-index: 1030;
   margin: 10px;
 }

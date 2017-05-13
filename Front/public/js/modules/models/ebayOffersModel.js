@@ -26,6 +26,16 @@ define([
     }
   }; 
   
+  objEbayOffersModel.getOfferById = function(nSoughtOfferId) {
+    for (var sProductCode in objEbayOffersModel.objOffers) {
+      for (var nOfferId in objEbayOffersModel.objOffers[sProductCode]) {
+        /* Leave this as a double == as sku can be numeric and passed as strings */
+        if (nOfferId == nSoughtOfferId) {
+          return objEbayOffersModel.objOffers[sProductCode][nOfferId];
+        }
+      }
+    }
+  };
   
   /* ------------------------------------------------------------------------ */
   

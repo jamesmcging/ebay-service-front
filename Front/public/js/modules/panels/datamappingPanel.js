@@ -253,8 +253,8 @@ define([
     sHTML += '    <tr>';
     sHTML += '      <td></td>';
     sHTML += '      <td>';
-    sHTML += '        <button id="resetDataMappings" class="btn btn-warning">Reset Mappings</button>';
-    sHTML += '        <button id="saveDataMappings" class="btn btn-success">Save Mappings</button>';
+    sHTML += '        <button id="resetDataMappings" class="btn btn-default">Reset Mappings</button>';
+    sHTML += '        <button id="saveDataMappings" class="btn btn-primary">Save Mappings</button>';
     sHTML += '      </td>';
     sHTML += '    </tr>';
     sHTML += '  </tfoot>';

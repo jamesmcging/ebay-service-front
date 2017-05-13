@@ -80,12 +80,7 @@ function(nsc,
     });
   };
   
-  objReturnPoliciesPanel.setModalListeners = function() {
-    nsc('#marketplace-selector').off().on('change', function() {
-      objReturnPoliciesPanel.setModalUpdating();
-      app.objModel.objPolicyModel.getReturnPoliciesByMarketplaceFromEbay(this.value);
-    });
-    
+  objReturnPoliciesPanel.setModalListeners = function() {    
     nsc('#return-policy-list-refresh').off().on('click', function() {
       objReturnPoliciesPanel.renderPolicyListMarkup();
     });
