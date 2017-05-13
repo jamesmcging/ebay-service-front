@@ -49,7 +49,8 @@ function(nsc,
       if (app.objModel.objEbayAuthorization.getStatus() === 4) {
         var sSelectedMarketplaceId = nsc('#marketplace-selector').val();
         if (sSelectedMarketplaceId !== '' && sSelectedMarketplaceId !== 'undefined') {
-          app.objModel.objPolicyModel.getReturnPoliciesByMarketplaceFromEbay(sSelectedMarketplaceId);
+          objReturnPoliciesPanel.setUpdating('Checking for return policies');
+          app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('return_policy', sSelectedMarketplaceId);
         }
       }
     });
@@ -77,6 +78,12 @@ function(nsc,
       }
       objReturnPoliciesPanel.showMessage(sMessage, 'danger');
       objReturnPoliciesPanel.setModalFinishedUpdating();
+    });
+    
+    nsc(document).on('marketplace-changed', function() {
+      var sMarketplaceId = nsc('#marketplace-selector').val();
+      objReturnPoliciesPanel.setUpdating('Checking for return policies for '+sMarketplaceId);
+      app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('return_policy', sMarketplaceId);
     });
   };
   
@@ -191,7 +198,7 @@ function(nsc,
         objData[objFormData[i].name] = objFormData[i].value;
       }
       objReturnPoliciesPanel.setModalUpdating();
-      app.objModel.objPolicyModel.createPolicy('returnPolicies', objData);
+      app.objModel.objPolicyModel.createPolicy('return_policy', objData);
     });
     
     nsc('#update-return-policy').off().on('click', function() {
@@ -205,13 +212,13 @@ function(nsc,
       }
 
       objReturnPoliciesPanel.setModalUpdating();
-      app.objModel.objPolicyModel.updatePolicy('returnPolicies', nPolicyId, objData);
+      app.objModel.objPolicyModel.updatePolicy('return_policy', nPolicyId, objData);
     });
     
     nsc('#delete-return-policy').off().on('click', function() {
       var nPolicyId = nsc(this).data('policyid');
       objReturnPoliciesPanel.setModalUpdating();
-      app.objModel.objPolicyModel.deletePolicy('returnPolicies', nPolicyId);
+      app.objModel.objPolicyModel.deletePolicy('return_policy', nPolicyId);
     });
   };
   
@@ -221,7 +228,7 @@ function(nsc,
   
   objReturnPoliciesPanel.setPanelStatus = function() {
     var sMarketplaceId = nsc('#marketplace-selector').val();
-    var objPolicies = app.objModel.objPolicyModel.getReturnPoliciesByMarketplace(sMarketplaceId);
+    var objPolicies = app.objModel.objPolicyModel.getPoliciesByMarketplace('return_policy', sMarketplaceId);
     
     if (Object.keys(objPolicies).length) {
       objReturnPoliciesPanel.setActive('Return policy in place for '+sMarketplaceId);
@@ -286,7 +293,7 @@ function(nsc,
   
   objReturnPoliciesPanel.getPolicyListMarkup = function(sMarketplaceId) {
     
-    var objPolicies = app.objModel.objPolicyModel.getReturnPoliciesByMarketplace(sMarketplaceId);
+    var objPolicies = app.objModel.objPolicyModel.getPoliciesByMarketplace('return_policy', sMarketplaceId);
     
     var sHTML = '';
 
@@ -348,7 +355,7 @@ function(nsc,
   };
   
   objReturnPoliciesPanel.getPolicyInterfaceMarkup = function(nPolicyId) {
-    var objPolicy = app.objModel.objPolicyModel.getPolicyById('returnPolicies', nPolicyId);
+    var objPolicy = app.objModel.objPolicyModel.getPolicyById('return_policy', nPolicyId);
     var sHTML = '';
     
     sHTML += '<div id="return-policy-interface" class="panel panel-default">';

@@ -4,7 +4,8 @@ define(['jquery',
   'modules/panels/credentialsPanel', 
   'modules/panels/locationsPanel',
   'modules/panels/datamappingPanel',
-  'modules/panels/returnpolicyPanel'
+  'modules/panels/returnpolicyPanel',
+  'modules/panels/fulfillmentpolicyPanel'
 ],
 function(nsc, 
   objTab, 
@@ -12,7 +13,8 @@ function(nsc,
   objCredentialsPanel, 
   objLocationsPanel, 
   objDatamappingPanel,
-  objReturnsPanel
+  objReturnsPanel,
+  objFulfillmentPanel
 ) {
    
   var objDashboard = {};
@@ -25,17 +27,19 @@ function(nsc,
   objDashboard.objSettings.bFirstShow = true;
   
   objDashboard.objChildPanels = {
-    summarypanel     : objSummaryPanel,
-    credentialspanel : objCredentialsPanel,
-    locationspanel   : objLocationsPanel,
-    datamappingpanel : objDatamappingPanel,
-    returnpoliciespanel : objReturnsPanel
+    summarypanel             : objSummaryPanel,
+    credentialspanel         : objCredentialsPanel,
+    locationspanel           : objLocationsPanel,
+    datamappingpanel         : objDatamappingPanel,
+    returnpoliciespanel      : objReturnsPanel,
+    fulfillmentpoliciesPanel : objFulfillmentPanel
   };
   objDashboard.objStatusPanels = {
-    credentialspanel    : objCredentialsPanel,
-    locationspanel      : objLocationsPanel,
-    datamappingpanel    : objDatamappingPanel,
-    returnpoliciespanel : objReturnsPanel
+    credentialspanel         : objCredentialsPanel,
+    locationspanel           : objLocationsPanel,
+    datamappingpanel         : objDatamappingPanel,
+    returnpoliciespanel      : objReturnsPanel,
+    filfillmentpoliciespanel : objFulfillmentPanel
   };  
   
   objDashboard.initialize = function() {

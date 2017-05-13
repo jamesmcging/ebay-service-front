@@ -14,19 +14,19 @@ define(['jquery',
   // Return Policies
   //
   //////////////////////////////////////////////////////////////////////////////
-  objAccountApi.createReturnPolicy = function(objPolicyData, sCallbackFunction) {
+  objAccountApi.createPolicy = function(sPolicyType, objPolicyData, sCallbackFunction) {
     // POST https://api.ebay.com/sell/account/v1/return_policy
-    this.makeCall('post', objAccountApi.sApiName, 'return_policy', '', objPolicyData, sCallbackFunction);
+    this.makeCall('post', objAccountApi.sApiName, sPolicyType, '', objPolicyData, sCallbackFunction);
   };
 
-  objAccountApi.deleteReturnPolicy = function(nPolicyId, objData, sCallbackFunction) {
+  objAccountApi.deletePolicy = function(sPolicyType, nPolicyId, objData, sCallbackFunction) {
     // DELETE https://api.ebay.com/sell/account/v1/return_policy/{nPolicyId}
-    this.makeCall('delete', objAccountApi.sApiName, 'return_policy', nPolicyId, objData, sCallbackFunction);
+    this.makeCall('delete', objAccountApi.sApiName, sPolicyType, nPolicyId, objData, sCallbackFunction);
   };
   
-  objAccountApi.getReturnPoliciesByMarketplace = function(sMarketplaceId, sCallbackFunction) {
+  objAccountApi.getPoliciesByMarketplace = function(sPolicyType, sMarketplaceId, sCallbackFunction) {
     // GET https://api.ebay.com/sell/account/v1/return_policy?marketplace_id=MarketplaceIdEnum
-    this.makeCall('get', objAccountApi.sApiName, 'return_policy', '?marketplace_id='+sMarketplaceId, {}, sCallbackFunction);
+    this.makeCall('get', objAccountApi.sApiName, sPolicyType, '?marketplace_id='+sMarketplaceId, {}, sCallbackFunction);
   };
   
   objAccountApi.getReturnPolicyById = function(nPolicyId, sCallbackFunction) {
@@ -39,9 +39,9 @@ define(['jquery',
     this.makeCall('get', objAccountApi.sApiName, 'return_policy', '?marketplace_id='+sMarketplaceId+'&name='+sPolicyName, {}, sCallbackFunction);
   };
   
-  objAccountApi.updatePolicy = function(nPolicyId, objPolicyData, sCallbackFunction) {
+  objAccountApi.updatePolicy = function(sPolicyType, nPolicyId, objPolicyData, sCallbackFunction) {
     // GET https://api.ebay.com/sell/account/v1/return_policy/{nPolicyId}
-    this.makeCall('put', objAccountApi.sApiName, 'return_policy', nPolicyId, objPolicyData, sCallbackFunction);
+    this.makeCall('put', objAccountApi.sApiName, sPolicyType, nPolicyId, objPolicyData, sCallbackFunction);
   };
     
   return objAccountApi;

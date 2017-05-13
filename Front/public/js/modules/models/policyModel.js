@@ -10,7 +10,7 @@ define([
   var objPolicyModel = {};
   
   objPolicyModel.objPolicies = {
-    returnPolicies   : {
+    return_policy : {
       newPolicy : {
         categoryTypes : {
           default : true,
@@ -32,8 +32,97 @@ define([
         returnShippingCostPayer : 'BUYER'
       }
     },
-    paymentPolicies  : {},
-    shipmentPolicies : {}
+    payment_policy : {},
+    fulfillment_policy : {
+      newPolicy : {
+        name : 'minimal fulfillment policy',
+        description : 'Short description of policy (max 250 characters)',
+        marketplaceId : 'EBAY_US',
+        categoryTypes : {
+          name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+        },
+        handlingTime : {
+          value : 1,
+          unit : 'DAY'
+        }
+      },
+      NewCompletePolicy : {
+        categoryTypes : {
+          default : true,
+          name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+        },
+        description : 'Enter a short description of your shipping policy. (max 250 characters)',
+        freightShipping : false,
+        globalShipping : false,
+        handlingTime : {
+          unit : "DAY",
+          value : 1
+        },
+        localPickup : false,
+        marketplaceId : 'EBAY_US',
+        name : 'Name of the fulfillment policy (max 62 characters)',
+        pickupDropOff : false,
+        shippingOptions : [
+          {
+            costType : 'FLAT_RATE',
+            insuranceFee : {
+              currency : 'EUR',
+              value : '0.00'
+            },
+            insuranceOffered : false,
+            optionType : 'DOMESTIC',
+            packageHandlingCost : {
+              currency : 'USD',
+              value : 0.00
+            },
+            shippingServices : {
+              additionalShippingCost : {
+                currency : 'USD',
+                value : 0.00                
+              },
+              buyerResponsibleForPickup : false,
+              buyerResponsibleForShipping : false,
+              cashOnDeliveryFee : {
+                currency : 'USD',
+                value : 0.00   
+              },
+              freeShipping : false,
+              shippingCarrierCode : 'USPS',
+              shippingCost : {
+                currency : 'USD',
+                value : 0.00                  
+              },
+              shippingServiceCode : '',
+              shipToLocations : {
+                regionExcluded : [
+                  {regionName : ''},
+                  {regionType : ''}
+                ],
+                regionIncluded : [
+                  {regionName : ''},
+                  {regionType : ''}                  
+                ]
+              },
+              sortOrder : 1,
+              surcharge : {
+                currency : 'USD',
+                value : 0.00   
+              }
+            }
+          }
+        ],
+        shipToLocations : {
+          regionExcluded : [
+            {regionName : ''},
+            {regionType : ''}
+          ],
+          regionIncluded : [
+            {regionName : ''},
+            {regionType : ''}                  
+          ]
+        }
+      }
+    }
   };
   
   objPolicyModel.initialize = function() {};
@@ -45,10 +134,15 @@ define([
   // Calls to local model
   // 
   //////////////////////////////////////////////////////////////////////////////
-  objPolicyModel.getReturnPoliciesByMarketplace = function(sLocationKey) {
+  objPolicyModel.getPoliciesByMarketplace = function(sPolicyType, sMarketplaceId) {
     var response = false;
-    if (typeof objPolicyModel.objPolicies.returnPolicies[sLocationKey] !== 'undefined') {
-      response = objPolicyModel.objPolicies.returnPolicies[sLocationKey];
+    
+    if (typeof objPolicyModel.objPolicies[sPolicyType] === 'undefined') {
+      alert('unrecognized policy type in getPoliciesByMarketplace! asked for:'+sPolicyType);
+    }
+    
+    if (typeof objPolicyModel.objPolicies[sPolicyType][sMarketplaceId] !== 'undefined') {
+      response = objPolicyModel.objPolicies[sPolicyType][sMarketplaceId];
     }
     
     return response;
@@ -78,7 +172,7 @@ define([
   //////////////////////////////////////////////////////////////////////////////
   objPolicyModel.createPolicy = function(sPolicyType, objFormData) {
     switch (sPolicyType)  {
-      case 'returnPolicies' : 
+      case 'return_policy' : 
         var objPolicy = {
           categoryTypes : [{
             default : true,
@@ -100,7 +194,24 @@ define([
           returnShippingCostPayer : objFormData.returnShippingCostPayer
         };
 
-        objAccountApi.createReturnPolicy(objPolicy, objPolicyModel.createPolicyRestResponse);
+        objAccountApi.createPolicy('return_policy', objPolicy, objPolicyModel.createReturnPolicyRestResponse);
+        break;
+        
+        case 'fulfillment_policy' :
+          var objPolicy = {
+            name : objFormData.name,
+            description : objFormData.description,
+            marketplaceId : nsc('#marketplace-selector').val(),
+            categoryTypes : [{
+              name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+            }],
+            handlingTime : {
+              value : objFormData.fulfillmentHandlingtimeValue,
+              unit : 'DAY'
+            }
+          };
+          
+          objAccountApi.createPolicy('fulfillment_policy', objPolicy, objPolicyModel.createFulfillmentPolicyRestResponse);
         break;
         
       default:
@@ -108,31 +219,56 @@ define([
     }
   };
   
-  objPolicyModel.createPolicyRestResponse = function(objData) {
+  objPolicyModel.createReturnPolicyRestResponse = function(objData) {
     if (typeof objData.sResponseMessage.errors !== 'undefined') {
       nsc(document).trigger('policycreationerror', [objData.sResponseMessage.errors]);
     } else if (objData.nResponseCode === 201) {
       var sMarketplaceId = nsc('#marketplace-selector').val();
       var nPolicyId = objData.sResponseMessage.returnPolicyId;
-      objPolicyModel.objPolicies.returnPolicies[sMarketplaceId][nPolicyId] = objData.sResponseMessage;
+      objPolicyModel.objPolicies.return_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage;
       nsc(document).trigger('policycreated', [{nPolicyId: nPolicyId}]);
     }
   };
   
+  objPolicyModel.createFulfillmentPolicyRestResponse = function(objData) {
+    if (typeof objData.sResponseMessage.errors !== 'undefined') {
+      nsc(document).trigger('policycreationerror', [objData.sResponseMessage.errors]);
+    } else if (objData.nResponseCode === 201) {
+      var sMarketplaceId = objData.sResponseMessage.marketplaceId;
+      var nPolicyId      = objData.sResponseMessage.fulfillmentPolicyId;
+      
+      if (typeof objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId] === 'undefined') {
+        objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId] = {};
+      }
+
+      objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage;
+      
+      nsc(document).trigger('policycreated', [{nPolicyId: nPolicyId}]);
+    }
+  };  
+  
+  
   objPolicyModel.deletePolicy = function(sPolicyType, nPolicyId) {
+    
+    
     switch (sPolicyType) {
-      case 'returnPolicies' :
+      case 'return_policy' :
         var sMarketplaceId = nsc('#marketplace-selector').val();
         var objData = {sPolicyType: sPolicyType, sMarketplaceId: sMarketplaceId, nPolicyId: nPolicyId};
-        objAccountApi.deleteReturnPolicy(nPolicyId, objData, objPolicyModel.deletePolicyRestResponse);
+        objAccountApi.deletePolicy('return_policy', nPolicyId, objData, objPolicyModel.deleteReturnPolicyRestResponse);
+        break;
+        
+      case 'fulfillment_policy' :
+        var sMarketplaceId = nsc('#marketplace-selector').val();
+        var objData = {sPolicyType: sPolicyType, sMarketplaceId: sMarketplaceId, nPolicyId: nPolicyId};
+        objAccountApi.deletePolicy('fulfillment_policy', nPolicyId, objData, objPolicyModel.deleteFulfillmentPolicyRestResponse);
         break;
     }
   };
   
-  objPolicyModel.deletePolicyRestResponse = function(objData) {
-    console.log(objData);
+  objPolicyModel.deleteReturnPolicyRestResponse = function(objData) {
     if (objData.nResponseCode === 204) {
-      delete objPolicyModel.objPolicies[objData.arrParams.sPolicyType][objData.arrParams.sMarketplaceId][objData.arrParams.nPolicyId];
+      delete objPolicyModel.objPolicies.return_policy[objData.arrParams.sMarketplaceId][objData.arrParams.nPolicyId];
       nsc(document).trigger('policydeleted', [{sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);
     } else if (typeof objData.sResponseMessage.errors !== 'undefined') {
       nsc(document).trigger('failedtodeletepolicy', [{arrErrors:objData.sResponseMessage.errors, sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);      
@@ -141,8 +277,27 @@ define([
     }
   };
   
-  objPolicyModel.getReturnPoliciesByMarketplaceFromEbay = function(sLocationKey) {
-    objAccountApi.getReturnPoliciesByMarketplace(sLocationKey, objPolicyModel.getReturnPoliciesByMarketplaceRestResponse);
+  objPolicyModel.deleteFulfillmentPolicyRestResponse = function(objData) {
+    if (objData.nResponseCode === 204) {
+      delete objPolicyModel.objPolicies.fulfillment_policy[objData.arrParams.sMarketplaceId][objData.arrParams.nPolicyId];
+      nsc(document).trigger('policydeleted', [{sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);
+    } else if (typeof objData.sResponseMessage.errors !== 'undefined') {
+      nsc(document).trigger('failedtodeletepolicy', [{arrErrors:objData.sResponseMessage.errors, sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);      
+    } else {
+      nsc(document).trigger('failedtodeletepolicy', [{sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);
+    }
+  };
+  
+  
+  objPolicyModel.getPoliciesByMarketplaceFromEbay = function(sPolicyType, sMarketplaceId) {
+    switch (sPolicyType) {
+      case 'return_policy' :
+        objAccountApi.getPoliciesByMarketplace('return_policy', sMarketplaceId, objPolicyModel.getReturnPoliciesByMarketplaceRestResponse);
+        break;
+      case 'fulfillment_policy' :
+        objAccountApi.getPoliciesByMarketplace('fulfillment_policy', sMarketplaceId, objPolicyModel.getFulfillmentPoliciesByMarketplaceRestResponse);
+        break;
+    }
   };
   
   objPolicyModel.getReturnPoliciesByMarketplaceRestResponse = function(objData) {
@@ -150,15 +305,15 @@ define([
       if (objData.sResponseMessage.total > 0) {
         for (var nKey in objData.sResponseMessage.returnPolicies) {
           var sMarketplaceId = objData.sResponseMessage.returnPolicies[nKey].marketplaceId;
+          var nPolicyId      = objData.sResponseMessage.returnPolicies[nKey].returnPolicyId;
           
           /* Ensure that we have an entry for this marketplace so we can insert
            * a policy into it. */
-          if (typeof objPolicyModel.objPolicies.returnPolicies[sMarketplaceId] === 'undefined') {
-            objPolicyModel.objPolicies.returnPolicies[sMarketplaceId] = {};
+          if (typeof objPolicyModel.objPolicies.return_policy[sMarketplaceId] === 'undefined') {
+            objPolicyModel.objPolicies.return_policy[sMarketplaceId] = {};
           }
-          
-          var nPolicyId = objData.sResponseMessage.returnPolicies[nKey].returnPolicyId;
-          objPolicyModel.objPolicies.returnPolicies[sMarketplaceId][nPolicyId] = objData.sResponseMessage.returnPolicies[nKey];
+
+          objPolicyModel.objPolicies.return_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage.returnPolicies[nKey];
         }
       }
       nsc(document).trigger('returnpoliciesfetched', [objData.sResponseMessage.total]);
@@ -167,9 +322,32 @@ define([
     }
   };
   
+  objPolicyModel.getFulfillmentPoliciesByMarketplaceRestResponse = function(objData) {
+    if (objData.nResponseCode === 200) {
+      if (objData.sResponseMessage.total > 0) {
+        for (var nKey in objData.sResponseMessage.fulfillmentPolicies) {
+          var sMarketplaceId = objData.sResponseMessage.fulfillmentPolicies[nKey].marketplaceId;          
+          var nPolicyId      = objData.sResponseMessage.fulfillmentPolicies[nKey].fulfillmentPolicyId;
+          
+          /* Ensure that we have an entry for this marketplace so we can insert
+           * a policy into it. */
+          if (typeof objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId] === 'undefined') {
+            objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId] = {};
+          }
+
+          objPolicyModel.objPolicies.fulfillment_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage.fulfillmentPolicies[nKey];
+        }
+      }
+      nsc(document).trigger('fulfillmentpoliciesfetched', [objData.sResponseMessage.total]);
+    } else {
+      nsc(document).trigger('failedtofetchfulfillmentpolicies', ['Fetch fulfillment policies', objData.sResponseMessage]);
+    }
+  };
+  
+  
   objPolicyModel.updatePolicy = function(sPolicyType, nPolicyId, objFormData) {
     switch (sPolicyType) {
-      case 'returnPolicies':
+      case 'return_policy':
         var objUpdatedPolicy = {
           categoryTypes : [{
             default : true,
@@ -191,12 +369,29 @@ define([
           returnShippingCostPayer : objFormData.returnShippingCostPayer
         };
 
-        objAccountApi.updatePolicy(nPolicyId, objUpdatedPolicy, objPolicyModel.updatePolicyRestResponse);
+        objAccountApi.updatePolicy('return_policy', nPolicyId, objUpdatedPolicy, objPolicyModel.updateReturnPolicyRestResponse);
+        break;
+        
+      case 'fulfillment_policy':
+        var objPolicy = {
+          name : objFormData.name,
+          description : objFormData.description,
+          marketplaceId : nsc('#marketplace-selector').val(),
+          categoryTypes : [{
+            name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+          }],
+          handlingTime : {
+            value : objFormData.fulfillmentHandlingtimeValue,
+            unit : 'DAY'
+          }
+        };
+
+        objAccountApi.updatePolicy('fulfillment_policy', nPolicyId, objPolicy, objPolicyModel.updateFulfillmentPolicyRestResponse);
         break;
     }
   };
   
-  objPolicyModel.updatePolicyRestResponse = function(objData) {
+  objPolicyModel.updateReturnPolicyRestResponse = function(objData) {
     if (objData.nResponseCode === 200) {
       var nProductId = objData.sResponseMessage.returnPolicyId;
       nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}])
@@ -205,5 +400,14 @@ define([
     }
   };
     
+  objPolicyModel.updateFulfillmentPolicyRestResponse = function(objData) {
+    if (objData.nResponseCode === 200) {
+      var nProductId = objData.sResponseMessage.returnPolicyId;
+      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}])
+    } else {
+      nsc(document).trigger('policyupdatefailed');
+    }
+  };
+        
   return objPolicyModel;
 });
