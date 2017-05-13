@@ -11,7 +11,7 @@ define(['jquery', 'modules/tabs/tab'], function(nsc, objTab) {
   
   objTools.getPanelContent = function() {
     var sHTML = '';
-    sHTML += '<a href="/store/marketplace">Get marketplace data</a>';
+    sHTML += '<a href="'+app.objModel.objURLs.sCatalogueURL+'/store/marketplace">Get marketplace data</a>';
     return sHTML;
   };
   

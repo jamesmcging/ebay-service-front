@@ -3,7 +3,13 @@
     "description": "Thesis frontend for the ebay protoytype",
     "type": "project",
     "require": {
-        "slim/slim": "^3.8"
+        "slim/slim": "^3.8",
+        "components/jquery": "^3.1",
+        "components/bootstrap": "^3.3",
+        "components/font-awesome": "^4.7"
+    },
+    "config": {
+        "component-dir": "public"
     },
     "autoload": {
         "psr-4": {

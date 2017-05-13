@@ -87,7 +87,7 @@ define(['jquery',
   objSummaryPanel.getStoreItemCount = function() {
     /* Ask the store for figures */    
     var jqxhr = nsc.ajax({
-      url      : '/store/storedata',
+      url      : app.objModel.objURLs.sCatalogueURL+'/store/storedata',
       data     : {},
       dataType : "json",
       type     : "get"

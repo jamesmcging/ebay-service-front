@@ -53,15 +53,15 @@ HTML;
     // depending on whether the pp is running in dev mode or on the live servers
     if (isset($_SERVER['EBAY_ENVIRONMENT']) && $_SERVER['EBAY_ENVIRONMENT'] == \Front\interfaces\EnvironmentInterface::DEV_MODE) {
       $arrURLs = array(
-        'sStoreURL'     => 'http://www.alaname.ie',
-        'sCoreURL'      => 'http://core.alaname.ie',
-        'sCatalogueURL' => 'http://catalogue.alaname.ie'
+        'sStoreURL'     => \Front\interfaces\URLInterface::DEV_MAIN_URL,
+        'sEbayURL'      => \Front\interfaces\URLInterface::DEV_EBAY_URL,
+        'sCatalogueURL' => \Front\interfaces\URLInterface::DEV_CATA_URL
       );
     } else {
       $arrURLs = array(
-        'sStoreURL'     => 'https://www.alaname.ie',
-        'sCoreURL'      => 'https://core.alaname.ie',
-        'sCatalogueURL' => 'https://catalogue.alaname.ie'
+        'sStoreURL'     => \Front\interfaces\URLInterface::LIVE_MAIN_URL,
+        'sEbayURL'      => \Front\interfaces\URLInterface::LIVE_EBAY_URL,
+        'sCatalogueURL' => \Front\interfaces\URLInterface::LIVE_CATA_URL
       );
     }
     
