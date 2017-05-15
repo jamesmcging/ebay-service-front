@@ -52,6 +52,8 @@ function(nsc,
           objReturnPoliciesPanel.setUpdating('Checking for return policies');
           app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('return_policy', sSelectedMarketplaceId);
         }
+      } else {
+        objReturnPoliciesPanel.setInactive('Please enter your credentials');
       }
     });
     
@@ -66,7 +68,9 @@ function(nsc,
     
     nsc(document).on('failedtofetchreturnpolicies', function(param1, sRestCallName, objResponseData) {
       var sMessage = '';
-      if (typeof objResponseData.errors.length !== 'undefined') {
+      if (objResponseData.nResponseCode === 0) {
+        sMessage = 'Unable to talk to eBay, probably due to missing credentials';
+      } else if (typeof objResponseData.errors.length !== 'undefined') {
         for (var i = 0, nLength = objResponseData.errors.length; i < nLength; i++) {
           sMessage += '<p>'+sRestCallName+' failed because:</p>';
           sMessage += '<ul>';
@@ -77,6 +81,7 @@ function(nsc,
         sMessage = 'Unknown error on failedtofetchreturnpolicies';
       }
       objReturnPoliciesPanel.showMessage(sMessage, 'danger');
+      objReturnPoliciesPanel.setInactive('Unable to fetch return policies for this marketplace');
       objReturnPoliciesPanel.setModalFinishedUpdating();
     });
     

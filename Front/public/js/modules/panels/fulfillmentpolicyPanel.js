@@ -52,6 +52,8 @@ function(nsc,
           objFulfillmentPoliciesPanel.setUpdating('Checking for fulfillment policies');
           app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('fulfillment_policy', sSelectedMarketplaceId);
         }
+      } else {
+        objFulfillmentPoliciesPanel.setInactive('Please enter your credentials');
       }
     });
     
@@ -66,7 +68,9 @@ function(nsc,
     
     nsc(document).on('failedtofetchfulfillmentpolicies', function(param1, sRestCallName, objResponseData) {
       var sMessage = '';
-      if (typeof objResponseData.errors.length !== 'undefined') {
+      if (objResponseData.nResponseCode === 0) {
+        sMessage = 'Unable to talk to eBay, probably due to missing credentials';
+      } else if (typeof objResponseData.errors.length !== 'undefined') {
         for (var i = 0, nLength = objResponseData.errors.length; i < nLength; i++) {
           sMessage += '<p>'+sRestCallName+' failed because:</p>';
           sMessage += '<ul>';
@@ -77,6 +81,7 @@ function(nsc,
         sMessage = 'Unknown error on failedtofetchfulfillmentpolicies';
       }
       objFulfillmentPoliciesPanel.showMessage(sMessage, 'danger');
+      objFulfillmentPoliciesPanel.setInactive('Unable to fetch fulfillment policies for this marketplace');
       objFulfillmentPoliciesPanel.setModalFinishedUpdating();
     });
     

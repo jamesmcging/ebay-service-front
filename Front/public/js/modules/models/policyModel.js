@@ -318,7 +318,7 @@ define([
       }
       nsc(document).trigger('returnpoliciesfetched', [objData.sResponseMessage.total]);
     } else {
-      nsc(document).trigger('failedtofetchreturnpolicies', ['Fetch return policies', objData.sResponseMessage]);
+      nsc(document).trigger('failedtofetchreturnpolicies', ['Fetch return policies', objData]);
     }
   };
   
@@ -340,7 +340,7 @@ define([
       }
       nsc(document).trigger('fulfillmentpoliciesfetched', [objData.sResponseMessage.total]);
     } else {
-      nsc(document).trigger('failedtofetchfulfillmentpolicies', ['Fetch fulfillment policies', objData.sResponseMessage]);
+      nsc(document).trigger('failedtofetchfulfillmentpolicies', ['Fetch fulfillment policies', objData]);
     }
   };
   
