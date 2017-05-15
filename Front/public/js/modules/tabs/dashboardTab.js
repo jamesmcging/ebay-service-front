@@ -5,7 +5,8 @@ define(['jquery',
   'modules/panels/locationsPanel',
   'modules/panels/datamappingPanel',
   'modules/panels/returnpolicyPanel',
-  'modules/panels/fulfillmentpolicyPanel'
+  'modules/panels/fulfillmentpolicyPanel',
+  'modules/panels/paymentpolicyPanel'
 ],
 function(nsc, 
   objTab, 
@@ -14,7 +15,8 @@ function(nsc,
   objLocationsPanel, 
   objDatamappingPanel,
   objReturnsPanel,
-  objFulfillmentPanel
+  objFulfillmentPanel,
+  objPaymentPanel
 ) {
    
   var objDashboard = {};
@@ -32,14 +34,16 @@ function(nsc,
     locationspanel           : objLocationsPanel,
     datamappingpanel         : objDatamappingPanel,
     returnpoliciespanel      : objReturnsPanel,
-    fulfillmentpoliciesPanel : objFulfillmentPanel
+    fulfillmentpoliciesPanel : objFulfillmentPanel,
+    paymentpoliciesPanel     : objPaymentPanel
   };
   objDashboard.objStatusPanels = {
     credentialspanel         : objCredentialsPanel,
     locationspanel           : objLocationsPanel,
     datamappingpanel         : objDatamappingPanel,
     returnpoliciespanel      : objReturnsPanel,
-    filfillmentpoliciespanel : objFulfillmentPanel
+    filfillmentpoliciespanel : objFulfillmentPanel,
+    paymentpoliciesPanel     : objPaymentPanel
   };  
   
   objDashboard.initialize = function() {
