@@ -70,7 +70,7 @@ function(nsc,
       var sMessage = '';
       if (objResponseData.nResponseCode === 0) {
         sMessage = 'Unable to talk to eBay, probably due to missing credentials';
-      } else if (typeof objResponseData.errors.length !== 'undefined') {
+      } else if (typeof objResponseData.sResponseMessage.errors.length !== 'undefined') {
         for (var i = 0, nLength = objResponseData.errors.length; i < nLength; i++) {
           sMessage += '<p>'+sRestCallName+' failed because:</p>';
           sMessage += '<ul>';
@@ -235,11 +235,15 @@ function(nsc,
     var sDefaultMarketplace = nsc('#marketplace-selector').val();
     var sHTML = '';
     
-    sHTML += objFulfillmentPoliciesPanel.getPolicyListMarkup(sDefaultMarketplace);
-    sHTML += '<div id="modal-alertbox">';
-    sHTML += '  <div id="modal-alertbox-inner"></div>';
-    sHTML += '</div>';
-    sHTML += '<div id="fulfillment-policy-interface"></div>';
+    if (app.objModel.objEbayAuthorization.getStatus() === 4) {
+      sHTML += objFulfillmentPoliciesPanel.getPolicyListMarkup(sDefaultMarketplace);
+      sHTML += '<div id="modal-alertbox">';
+      sHTML += '  <div id="modal-alertbox-inner"></div>';
+      sHTML += '</div>';
+      sHTML += '<div id="fulfillment-policy-interface"></div>';
+    } else {
+      sHTML += '<p>Please start with the credentials panel.</p>';
+    }
     
     return sHTML;
   };

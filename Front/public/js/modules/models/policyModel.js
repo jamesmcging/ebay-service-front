@@ -240,18 +240,17 @@ define([
             description : objFormData.description,
             marketplaceId : objFormData.marketplaceId,
             immediatePay : (objFormData.immediatePay) ? true : false,
-            categoryTypes : {
+            categoryTypes : [{
               name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
               default : false
-            },
-            paymentMethods : [
-              { paymentMethodType : 'PAYPAL',
-                recipientAccountReference:{
-                  referenceId : objFormData.referenceId,
-                  referenceType : objFormData.referenceType
-                }
+            }],
+            paymentMethods : [{
+              paymentMethodType : 'PAYPAL',
+              recipientAccountReference:{
+                referenceId : objFormData.referenceId,
+                referenceType : objFormData.referenceType
               }
-            ]
+            }]
           };
           
           objAccountApi.createPolicy('payment_policy', objPolicy, objPolicyModel.createPaymentPolicyRestResponse);
@@ -295,7 +294,7 @@ define([
       nsc(document).trigger('policycreationerror', [objData.sResponseMessage.errors]);
     } else if (objData.nResponseCode === 201) {
       var sMarketplaceId = objData.sResponseMessage.marketplaceId;
-      var nPolicyId      = objData.sResponseMessage.paymntPolicyId;
+      var nPolicyId      = objData.sResponseMessage.paymentPolicyId;
       
       if (typeof objPolicyModel.objPolicies.payment_policy[sMarketplaceId] === 'undefined') {
         objPolicyModel.objPolicies.payment_policy[sMarketplaceId] = {};
@@ -497,21 +496,20 @@ define([
           description : objFormData.description,
           marketplaceId : objFormData.marketplaceId,
           immediatePay : (objFormData.immediatePay) ? true : false,
-          categoryTypes : {
+          categoryTypes : [{
             name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
             default : false
-          },
-          paymentMethods : [
-            { paymentMethodType : 'PAYPAL',
+          }],
+          paymentMethods : [{ 
+              paymentMethodType : 'PAYPAL',
               recipientAccountReference:{
                 referenceId : objFormData.referenceId,
                 referenceType : objFormData.referenceType
               }
-            }
-          ]
+            }]
         };
 
-        objAccountApi.createPolicy('payment_policy', objPolicy, objPolicyModel.updatePaymentPolicyRestResponse);
+        objAccountApi.updatePolicy('payment_policy', nPolicyId, objPolicy, objPolicyModel.updatePaymentPolicyRestResponse);
       break;
     }
   };
