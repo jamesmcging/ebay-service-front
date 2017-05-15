@@ -13,8 +13,8 @@ define([
     return_policy : {
       newPolicy : {
         categoryTypes : {
-          default : true,
-          name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+          name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
+          default : false
         },
         description : 'Enter a short description of your return policy including: how quickly you will refund and whether you require the items before refunding. (max 250 characters)',
         extendedHolidayReturnsOffered : false,
@@ -32,14 +32,34 @@ define([
         returnShippingCostPayer : 'BUYER'
       }
     },
-    payment_policy : {},
+    payment_policy : {
+      newPolicy : {
+        name : 'An example payment policy',
+        description : 'Standard payment policy (max 250 characters)',
+        marketplaceId : 'EBAY_US',
+        immediatePay : true,
+        categoryTypes : {
+          name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
+          default : false
+        },
+        paymentMethods : [
+          { paymentMethodType : 'PAYPAL',
+            recipientAccountReference:{
+              referenceId : 'jamesmcging-testretailer@gmail.com',
+              referenceType : 'PAYPAL_EMAIL'
+            }
+          }
+        ]
+      }
+    },
     fulfillment_policy : {
       newPolicy : {
         name : 'minimal fulfillment policy',
         description : 'Short description of policy (max 250 characters)',
         marketplaceId : 'EBAY_US',
         categoryTypes : {
-          name : 'ALL_EXCLUDING_MOTORS_VEHICLES'
+          name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
+          default : false
         },
         handlingTime : {
           value : 1,
@@ -213,6 +233,29 @@ define([
           
           objAccountApi.createPolicy('fulfillment_policy', objPolicy, objPolicyModel.createFulfillmentPolicyRestResponse);
         break;
+
+        case 'payment_policy' :
+          var objPolicy = {
+            name : objFormData.name,
+            description : objFormData.description,
+            marketplaceId : objFormData.marketplaceId,
+            immediatePay : (objFormData.immediatePay) ? true : false,
+            categoryTypes : {
+              name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
+              default : false
+            },
+            paymentMethods : [
+              { paymentMethodType : 'PAYPAL',
+                recipientAccountReference:{
+                  referenceId : objFormData.referenceId,
+                  referenceType : objFormData.referenceType
+                }
+              }
+            ]
+          };
+          
+          objAccountApi.createPolicy('payment_policy', objPolicy, objPolicyModel.createPaymentPolicyRestResponse);
+        break;
         
       default:
         nsc(document).trigger('unrecognisedpolicytype', [{sPolicyType: sPolicyType}]);
@@ -246,11 +289,26 @@ define([
       nsc(document).trigger('policycreated', [{nPolicyId: nPolicyId}]);
     }
   };  
+
+  objPolicyModel.createPaymentPolicyRestResponse = function(objData) {
+    if (typeof objData.sResponseMessage.errors !== 'undefined') {
+      nsc(document).trigger('policycreationerror', [objData.sResponseMessage.errors]);
+    } else if (objData.nResponseCode === 201) {
+      var sMarketplaceId = objData.sResponseMessage.marketplaceId;
+      var nPolicyId      = objData.sResponseMessage.paymntPolicyId;
+      
+      if (typeof objPolicyModel.objPolicies.payment_policy[sMarketplaceId] === 'undefined') {
+        objPolicyModel.objPolicies.payment_policy[sMarketplaceId] = {};
+      }
+
+      objPolicyModel.objPolicies.payment_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage;
+      
+      nsc(document).trigger('policycreated', [{nPolicyId: nPolicyId}]);
+    }
+  }; 
   
   
   objPolicyModel.deletePolicy = function(sPolicyType, nPolicyId) {
-    
-    
     switch (sPolicyType) {
       case 'return_policy' :
         var sMarketplaceId = nsc('#marketplace-selector').val();
@@ -262,6 +320,12 @@ define([
         var sMarketplaceId = nsc('#marketplace-selector').val();
         var objData = {sPolicyType: sPolicyType, sMarketplaceId: sMarketplaceId, nPolicyId: nPolicyId};
         objAccountApi.deletePolicy('fulfillment_policy', nPolicyId, objData, objPolicyModel.deleteFulfillmentPolicyRestResponse);
+        break;
+        
+      case 'fulfillment_policy' :
+        var sMarketplaceId = nsc('#marketplace-selector').val();
+        var objData = {sPolicyType: sPolicyType, sMarketplaceId: sMarketplaceId, nPolicyId: nPolicyId};
+        objAccountApi.deletePolicy('payment_policy', nPolicyId, objData, objPolicyModel.deletePaymentPolicyRestResponse);
         break;
     }
   };
@@ -288,14 +352,30 @@ define([
     }
   };
   
+  objPolicyModel.deletePaymentPolicyRestResponse = function(objData) {
+    if (objData.nResponseCode === 204) {
+      delete objPolicyModel.objPolicies.payment_policy[objData.arrParams.sMarketplaceId][objData.arrParams.nPolicyId];
+      nsc(document).trigger('policydeleted', [{sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);
+    } else if (typeof objData.sResponseMessage.errors !== 'undefined') {
+      nsc(document).trigger('failedtodeletepolicy', [{arrErrors:objData.sResponseMessage.errors, sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);      
+    } else {
+      nsc(document).trigger('failedtodeletepolicy', [{sPolicyType:objData.arrParams.sPolicyType, sMarketplaceId:objData.arrParams.sMarketplaceId, nPolicyId: objData.arrParams.nPolicyId}]);
+    }
+  };
+  
   
   objPolicyModel.getPoliciesByMarketplaceFromEbay = function(sPolicyType, sMarketplaceId) {
     switch (sPolicyType) {
       case 'return_policy' :
         objAccountApi.getPoliciesByMarketplace('return_policy', sMarketplaceId, objPolicyModel.getReturnPoliciesByMarketplaceRestResponse);
         break;
+        
       case 'fulfillment_policy' :
         objAccountApi.getPoliciesByMarketplace('fulfillment_policy', sMarketplaceId, objPolicyModel.getFulfillmentPoliciesByMarketplaceRestResponse);
+        break;
+        
+      case 'payment_policy' :
+        objAccountApi.getPoliciesByMarketplace('payment_policy', sMarketplaceId, objPolicyModel.getPaymentPoliciesByMarketplaceRestResponse);
         break;
     }
   };
@@ -344,6 +424,28 @@ define([
     }
   };
   
+  objPolicyModel.getPaymentPoliciesByMarketplaceRestResponse = function(objData) {
+    if (objData.nResponseCode === 200) {
+      if (objData.sResponseMessage.total > 0) {
+        for (var nKey in objData.sResponseMessage.paymentPolicies) {
+          var sMarketplaceId = objData.sResponseMessage.paymentPolicies[nKey].marketplaceId;          
+          var nPolicyId      = objData.sResponseMessage.paymentPolicies[nKey].paymentPolicyId;
+          
+          /* Ensure that we have an entry for this marketplace so we can insert
+           * a policy into it. */
+          if (typeof objPolicyModel.objPolicies.payment_policy[sMarketplaceId] === 'undefined') {
+            objPolicyModel.objPolicies.payment_policy[sMarketplaceId] = {};
+          }
+
+          objPolicyModel.objPolicies.payment_policy[sMarketplaceId][nPolicyId] = objData.sResponseMessage.paymentPolicies[nKey];
+        }
+      }
+      nsc(document).trigger('paymentpoliciesfetched', [objData.sResponseMessage.total]);
+    } else {
+      nsc(document).trigger('failedtofetchpaymentpolicies', ['Fetch paymant policies', objData]);
+    }
+  };
+  
   
   objPolicyModel.updatePolicy = function(sPolicyType, nPolicyId, objFormData) {
     switch (sPolicyType) {
@@ -388,13 +490,36 @@ define([
 
         objAccountApi.updatePolicy('fulfillment_policy', nPolicyId, objPolicy, objPolicyModel.updateFulfillmentPolicyRestResponse);
         break;
+             
+      case 'payment_policy' :
+        var objPolicy = {
+          name : objFormData.name,
+          description : objFormData.description,
+          marketplaceId : objFormData.marketplaceId,
+          immediatePay : (objFormData.immediatePay) ? true : false,
+          categoryTypes : {
+            name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
+            default : false
+          },
+          paymentMethods : [
+            { paymentMethodType : 'PAYPAL',
+              recipientAccountReference:{
+                referenceId : objFormData.referenceId,
+                referenceType : objFormData.referenceType
+              }
+            }
+          ]
+        };
+
+        objAccountApi.createPolicy('payment_policy', objPolicy, objPolicyModel.updatePaymentPolicyRestResponse);
+      break;
     }
   };
   
   objPolicyModel.updateReturnPolicyRestResponse = function(objData) {
     if (objData.nResponseCode === 200) {
       var nProductId = objData.sResponseMessage.returnPolicyId;
-      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}])
+      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}]);
     } else {
       nsc(document).trigger('policyupdatefailed');
     }
@@ -403,7 +528,16 @@ define([
   objPolicyModel.updateFulfillmentPolicyRestResponse = function(objData) {
     if (objData.nResponseCode === 200) {
       var nProductId = objData.sResponseMessage.returnPolicyId;
-      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}])
+      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}]);
+    } else {
+      nsc(document).trigger('policyupdatefailed');
+    }
+  };
+  
+  objPolicyModel.updatePaymentPolicyRestResponse = function(objData) {
+    if (objData.nResponseCode === 200) {
+      var nProductId = objData.sResponseMessage.paymentPolicyId;
+      nsc(document).trigger('policyupdated', [{nPolicyId:nProductId}]);
     } else {
       nsc(document).trigger('policyupdatefailed');
     }
