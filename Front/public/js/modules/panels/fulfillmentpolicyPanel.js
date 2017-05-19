@@ -71,10 +71,10 @@ function(nsc,
       if (objResponseData.nResponseCode === 0) {
         sMessage = 'Unable to talk to eBay, probably due to missing credentials';
       } else if (typeof objResponseData.sResponseMessage.errors.length !== 'undefined') {
-        for (var i = 0, nLength = objResponseData.errors.length; i < nLength; i++) {
+        for (var i = 0, nLength = objResponseData.sResponseMessage.errors.length; i < nLength; i++) {
           sMessage += '<p>'+sRestCallName+' failed because:</p>';
           sMessage += '<ul>';
-          sMessage += '<li>['+objResponseData.errors[i].errorId+'] '+objResponseData.errors[i].message+'</li>';
+          sMessage += '<li>['+objResponseData.sResponseMessage.errors[i].errorId+'] '+objResponseData.sResponseMessage.errors[i].message+'</li>';
           sMessage += '</ul>';
         }
       } else {
@@ -226,7 +226,7 @@ function(nsc,
     
     sHTML += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
     sHTML += '<span id="updating-icon-span" style="float:right"></span>';
-    sHTML += '<h2 class="modal-title">Fulfillment Policy Interface</h2>';
+    sHTML += '<h2 class="modal-title">Fulfillment (shipping) Policy</h2>';
     
     return sHTML;
   };

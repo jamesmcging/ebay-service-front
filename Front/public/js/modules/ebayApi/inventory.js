@@ -79,10 +79,26 @@ define(['jquery', 'modules/ebayApi/restCaller'], function(nsc, objRestCaller) {
     this.makeCall('post', objInventoryApi.sApiName, 'offer', '', objData, sCallbackFunction);
   };
   
-  objInventoryApi.getListingFeeds = function(objData, sCallbackFunction) {
-    // POST https://api.ebay.com/sell/inventory/v1/offer/get_listing_fees
-    this.makeCall('post', objInventoryApi.sApiName, 'offer', 'get_listing_fees', objData, sCallbackFunction);
+  objInventoryApi.deleteOffer = function(nOfferId, sCallbackFunction) {
+    console.log('inventory deleting offer :'+nOfferId);
+    // DELETE /offer/{offerId}
+    this.makeCall('delete', objInventoryApi.sApiName, 'offer', nOfferId, {}, sCallbackFunction);
   };
+  
+  objInventoryApi.updateOffer = function(nOfferId, objOfferData, sCallbackFunction) {
+    // PUT https://api.ebay.com/sell/inventory/v1offer/{offer_Id}
+    this.makeCall('put', objInventoryApi.sApiName, 'offer', nOfferId, objOfferData, sCallbackFunction);
+  };
+  
+  objInventoryApi.getListingFee = function(arrOfferIds, sCallbackFunction) {
+    // POST https://api.ebay.com/sell/inventory/v1/offer/get_listing_fees
+    this.makeCall('post', objInventoryApi.sApiName, 'offer', 'get_listing_fees', arrOfferIds, sCallbackFunction);
+  };
+  
+  objInventoryApi.publishOffer = function(nOfferId, sCallbackFunction) {
+    // POST https://api.ebay.com/sell/inventory/v1/offer/{offerId}/publish
+    this.makeCall('post', objInventoryApi.sApiName, 'offer', nOfferId+'/publish', {}, sCallbackFunction);
+  };  
   
   return objInventoryApi;
 });

@@ -209,6 +209,7 @@ define(['jquery',
     
     var sHTML = '';
     sHTML += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+    sHTML += '<span id="updating-icon-span" style="float:right"></span>';
     sHTML += '<h2 class="modal-title">'+objStoreItem.product_name+'</h2>';
     sHTML += '<span class="ghost">Sku '+objStoreItem.product_code+'</span>';
     sHTML += '&nbsp;<span class="ghost text-right">Product ID '+objStoreItem.product_id+'</span>';
@@ -220,7 +221,6 @@ define(['jquery',
   };
     
   objEbayCatalogueListingPanel.getModalFooterMarkup = function() {
-    var sProductCode = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
     var sHTML = '';
     sHTML += '<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>';
     

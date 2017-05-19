@@ -155,17 +155,17 @@ define([
   // 
   //////////////////////////////////////////////////////////////////////////////
   objPolicyModel.getPoliciesByMarketplace = function(sPolicyType, sMarketplaceId) {
-    var response = false;
+    var objPolicies = false;
     
     if (typeof objPolicyModel.objPolicies[sPolicyType] === 'undefined') {
       alert('unrecognized policy type in getPoliciesByMarketplace! asked for:'+sPolicyType);
     }
     
     if (typeof objPolicyModel.objPolicies[sPolicyType][sMarketplaceId] !== 'undefined') {
-      response = objPolicyModel.objPolicies[sPolicyType][sMarketplaceId];
+      objPolicies = objPolicyModel.objPolicies[sPolicyType][sMarketplaceId];
     }
     
-    return response;
+    return objPolicies;
   };
   
   objPolicyModel.getPolicyById = function(sPolicyType, nPolicyId) {
@@ -184,6 +184,17 @@ define([
     return objResponse;
   };
 
+  objPolicyModel.getDefaultPolicy = function(sPolicyType, sMarketplaceId) {
+    var objDefaultPolicy = false;
+    /* This needs developed - policies can be set to default - perhaps add radio button selector to the policy list */
+    if (typeof objPolicyModel.objPolicies[sPolicyType][sMarketplaceId] !== 'undefined') {
+      for (var nPolicyId in objPolicyModel.objPolicies[sPolicyType][sMarketplaceId]) {
+        objDefaultPolicy = objPolicyModel.objPolicies[sPolicyType][sMarketplaceId][nPolicyId];
+      }
+    }
+    
+    return objDefaultPolicy;
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   // 
@@ -228,7 +239,56 @@ define([
             handlingTime : {
               value : objFormData.fulfillmentHandlingtimeValue,
               unit : 'DAY'
-            }
+            },
+            shipToLocations : {
+              regionIncluded:[{
+                  regionName: 'WORLDWIDE'
+              }],
+              regionExcluded: [{
+                  regionType : 'WORLD_REGION',
+                  regionName : 'Antartica'
+              }]
+            },
+            shippingOptions : [{
+              optionType : 'DOMESTIC',
+              costType : 'FLAT_RATE',
+              shippingServices: [{
+                sortOrderId : 1,
+                shippingServiceCode: 'FedExHomeDelivery',
+                shippingCost: {
+                  value : '1.2',
+                  currency : 'USD'
+                },
+                additionalShippingCost: {
+                  value : '1.2',
+                  currency : 'USD'
+                },
+                freeShipping: false,
+                buyerResponsibleForPickup: false
+              }]
+            },
+            {
+              optionType : 'INTERNATIONAL',
+              costType : 'FLAT_RATE',
+              shippingServices : [{
+                sortOrderId : 1,
+                shippingServiceCode: 'InternationalPriorityShipping',
+                shippingCost : {
+                  value : '3.5',
+                  currency : 'USD'
+                },
+                freeShipping : false,
+                shipToLocations : {
+                  regionIncluded : [{
+                    regionName : 'WORLDWIDE'
+                  }]
+                },
+                buyerResponsibleForPickup : false
+              }]
+            }],
+            globalShipping: true,
+            pickupDropOff : false,
+            freightShipping: false
           };
           
           objAccountApi.createPolicy('fulfillment_policy', objPolicy, objPolicyModel.createFulfillmentPolicyRestResponse);

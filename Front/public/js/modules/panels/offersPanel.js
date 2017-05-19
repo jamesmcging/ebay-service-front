@@ -1,174 +1,204 @@
 define(['jquery', 
-  'modules/panels/panel',
-  ], 
-  function(nsc, 
-  objPanel
-  ) {
+  'modules/panels/panel'], 
+function(nsc, 
+  objPanel) {
    
   var objOffersPanel = {};
 
   objOffersPanel.__proto__ = objPanel;
   
-  objOffersPanel.sName = 'eBay Offers';
+  objOffersPanel.sName = 'Offers';
   objOffersPanel.sCode = 'offerspanel';
-
+  
   objOffersPanel.objChildPanels = {};
   
-  objOffersPanel.objSettings.bActive = false;
-   
-  objOffersPanel.getPanelMarkup = function() {
-    var sHTML = '';
-    sHTML += '<div id="'+objOffersPanel.sCode+'-panel">';
-    
-    /* Panel to display existing offers associated with this sku. We display a 
-     * loading spinner that will be replaced when data becomes available */
-    sHTML += '<div id="offer-list" class="text-center">';
-    sHTML += '  <span class="fa fa-3x fa-refresh fa-spin fa-fw text-center"></span>';
-    sHTML += '  <p class="text-center">Loading offers...</p>';
-    sHTML += '</div>';
-    
-    /* Panel to display offering data or build a new offering */
-    sHTML += '<div id="offer-details"></div>';
-    
-    sHTML += '</div><!-- #'+objOffersPanel.sCode+'-panel -->';
-    return sHTML;
-  };
+  objOffersPanel.setListeners = function() {};
   
-  objOffersPanel.setListeners = function() {
-    ////////////////////////////////////////////////////////////////////////////
-    // 
-    // Triggers near the offer listing panel
-    // 
-    ////////////////////////////////////////////////////////////////////////////    
-    /* React to an existing offer in the offer listing table being clicked */
+  objOffersPanel.setModalListeners = function() {
+    nsc('#offer-list-refresh').off().on('click', function() {
+      console.log('offer list refresh called');
+      objOffersPanel.renderOfferListMarkup();
+    });
+    
     nsc('.offer-existing').off().on('click', function() {
       var nOfferId = nsc(this).data('offerid');
-      var objOffer = app.objModel.objEbayOffersModel.getOfferById(nOfferId);
-      nsc('#offer-details').replaceWith(objOffersPanel.getOfferDetailMarkup(objOffer));
-      objOffersPanel.setListeners();
+      objOffersPanel.renderOfferInterface(nOfferId);
     });
     
     nsc('#offer-new').off().on('click', function() {
-      nsc('#offer-details').replaceWith(objOffersPanel.getOfferDetailMarkup(''));
-      objOffersPanel.setListeners();
-    });
-    
-    /* Allow the reloading of the offer list */
-    nsc('#offer-list-refresh').off().on('click', function() {
-      console.log('refresh offer list clicked');
-      nsc('#offerspanel-panel').replaceWith(objOffersPanel.getPanelMarkup());
-      app.objModel.objEbayOffersModel.getOffersFromEbayByProductcode(app.objModel.objEbayCatalogueModel.nCurrentItemCode);
-    });
-    
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // 
-    // Triggers in the new offer form
-    // 
-    ////////////////////////////////////////////////////////////////////////////
-    nsc('#new-offer-marketplace').off().on('change', function() {
-      nsc('#new-offer-marketplacevalue').val(this.value);
-    });
-    
-    nsc('#new-offer-pricefield').off().on('change', function() {
-      var sItemCode    = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
-      var objStoreItem = app.objModel.objStoreCatalogueModel.getItemByCode(sItemCode);
-      var sFieldValue  = objStoreItem[this.value];
-      nsc('#price-value').val(sFieldValue);
-      
-      console.log('price field changed to '+this.value);
-    });
-    
-    nsc('#new-offer-quantityfield').off().on('change', function() {
-      var sItemCode    = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
-      var objStoreItem = app.objModel.objStoreCatalogueModel.getItemByCode(sItemCode);
-      var sFieldValue  = objStoreItem[this.value];
-      nsc('#new-offer-quantity-value').val(sFieldValue);
-      
-      console.log('quantity field changed to '+this.value);
-    });
-    
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // 
-    // Buttons at the bottom of the offer detail form
-    // 
-    ////////////////////////////////////////////////////////////////////////////
-    nsc('#create-ebay-offer').off().on('click', function() {
-      var objItemData  = nsc('#create-offer-form').serializeArray();
-      
-      /* serializeData needs massaged into a useful structure */
-      var objData = {};
-      for (var i in objItemData) {
-        objData[objItemData[i].name] = objItemData[i].value;
-      }
-      objData.sku  = nsc(this).data('sku');
-
-      app.objModel.objEbayOffersModel.createOffer(objData);
-    });
-    
-    nsc('#delete-ebay-offer').off().on('click', function() {
-      var sProductCode = nsc(this).data('sku');
-      console.log('delete offer for product code '+sProductCode);
-    });    
-    
-    nsc('#get-listing-fee').off().on('click', function() {
-      var sProductCode = nsc(this).data('sku');
-      console.log('get listing for product code '+sProductCode);
-    });
-    
-    nsc('#publish-offer').off().on('click', function() {
-      var sProductCode = nsc(this).data('sku');
-      console.log('publish offer for product code '+sProductCode);
-    });    
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    // 
-    // App wide events
-    // 
-    ////////////////////////////////////////////////////////////////////////////
-    nsc(document).off('offercreated').on('offercreated', function() {
-      objOffersPanel.showMessage('Offer creation succeeded', 'success');
-      nsc('#offerspanel-panel').replaceWith(objOffersPanel.getPanelMarkup());
-      app.objModel.objEbayOffersModel.getOffersFromEbayByProductcode(app.objModel.objEbayCatalogueModel.nCurrentItemCode);
-    });
-    
-    nsc(document).off('failedrestcall').on('failedrestcall', function(param1, sRestCallName, objResponseData) {
-      var sMessage = '';
-      for (var i = 0, nLength = objResponseData.errors.length; i < nLength; i++) {
-        sMessage += '<p>'+sRestCallName+' failed because:</p>';
-        sMessage += '<ul>';
-        sMessage += '<li>['+objResponseData.errors[i].errorId+'] '+objResponseData.errors[i].message+'</li>';
-        sMessage += '</ul>';
-      }
-      objOffersPanel.showMessage(sMessage, 'danger');
+      objOffersPanel.renderOfferInterface();
     });
     
     nsc(document).off('offersfetched').on('offersfetched', function(event, nOfferCount) {
-      nsc('#offer-list').replaceWith(objOffersPanel.getOfferListMarkup());
-      objOffersPanel.setListeners();
+      objOffersPanel.renderOfferListMarkup();
+    });
+    
+    nsc(document).off('offercreationerror').on('offercreationerror', function(event, objErrors) {
+      var sAlertMessage = '';
+      sAlertMessage += '<ul>';
+      for (var i in objErrors) {
+        sAlertMessage += '<li>('+objErrors[i].errorId+') '+objErrors[i].message+'</li>';
+      }
+      sAlertMessage += '</ul>';
+      objOffersPanel.showMessage(sAlertMessage, 'danger');
+      objOffersPanel.setModalFinishedUpdating();
+    });
+    
+    nsc(document).off('offercreated').on('offercreated', function(event) {
+      objOffersPanel.showMessage('Offer created', 'success');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+      objOffersPanel.hideOfferInterface();
+    });
+    
+    nsc(document).off('failedtodeleteoffer').on('failedtodeleteoffer', function(event, objData) {
+      var sAlertMessage = '';
+      
+      if (typeof objData.arrErrors !== 'undefined') {  
+        sAlertMessage += '<ul>';
+        for (var i = 0, nLength = objData.arrErrors.length; i < nLength; i++) {
+          sAlertMessage += '<li>('+objData.arrErrors[i].errorId+') '+objData.arrErrors[i].message+'</li>';
+        }
+        sAlertMessage += '</ul>';
+      } else {
+        sAlertMessage += '<p>Failed to delete offer</p>';
+      }
+      objOffersPanel.showMessage(sAlertMessage, 'warning');
+      objOffersPanel.setModalFinishedUpdating();
+    });
+    
+    nsc(document).off('offerdeleted').on('offerdeleted', function(event) {      
+      objOffersPanel.showMessage('Deleted offer', 'success');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+      objOffersPanel.hideOfferInterface();
+    });
+    
+    nsc(document).off('offerupdated').on('offerupdated', function(event, objResponseData) {
+      console.log(objResponseData);
+      objOffersPanel.showMessage('Offer '+objResponseData.nOfferId+' updated', 'success');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+      objOffersPanel.hideOfferInterface();
+    });
+    
+    nsc(document).off('offerupdatefailed').on('offerupdatefailed', function(event, objResponseData) {
+      console.log(objResponseData);
+      objOffersPanel.showMessage('Offer update failed', 'warning');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+    });    
+    
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // Listeners attached to the offer details form
+    //
+    ////////////////////////////////////////////////////////////////////////////
+    nsc('#offer-reference-selector').off().on('change', function() {
+      nsc('#offer-reference-type').val(this.value);
+    });
+    
+    nsc('#location-selector').off().on('change', function() {
+      nsc('#locationid-value').val(this.value);
+    });
+    
+    nsc('#create-ebay-offer').off().on('click', function() {
+      var objFormData = nsc('#create-offer-form').serializeArray();
+      var objData = {};
+      
+      /* serializeData needs massaged into a useful structure */
+      for (var i in objFormData) {
+        objData[objFormData[i].name] = objFormData[i].value;
+      }
+      
+      objOffersPanel.setModalUpdating();
+      app.objModel.objEbayOffersModel.createOffer(objData);
+    });
+    
+    nsc('#update-ebay-offer').off().on('click', function() {
+      var nOfferId = nsc(this).data('offerid');
+      var objFormData = nsc('#create-offer-form').serializeArray();
+      var objData = {};
+     
+      /* serializeData needs massaged into a useful structure */
+      for (var i in objFormData) {
+        objData[objFormData[i].name] = objFormData[i].value;
+      }
+
+      objOffersPanel.setModalUpdating();
+      app.objModel.objEbayOffersModel.updateOffer(nOfferId, objData);
+    });
+    
+    nsc('#delete-ebay-offer').off().on('click', function() {
+      var nOfferId = nsc(this).data('offerid');
+      objOffersPanel.setModalUpdating();
+      app.objModel.objEbayOffersModel.deleteOffer(nOfferId);
+    });
+    
+    nsc('#get-listing-fee').off().on('click', function() {
+      var nOfferId = nsc(this).data('offerid');
+      objOffersPanel.setModalUpdating();
+      app.objModel.objEbayOffersModel.getListingFee(nOfferId);
+    });
+    
+    nsc('#publish-offer').off().on('click', function() {
+      var nOfferId = nsc(this).data('offerid');
+      objOffersPanel.setModalUpdating();
+      app.objModel.objEbayOffersModel.publishOffer(nOfferId);
     });
   };
   
   objOffersPanel.initialize = function() {
-    var sProductCode = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
-    /* If we don't have any offers for the current product, we ask eBay if any
-     * exist. */
-    if (app.objModel.objEbayOffersModel.getOffersForProduct(sProductCode)) {
-      nsc('#offer-list').replaceWith(objOffersPanel.getOfferListMarkup());
-      objOffersPanel.setListeners();
-    } else {
-      app.objModel.objEbayOffersModel.getOffersFromEbayByProductcode(app.objModel.objEbayCatalogueModel.nCurrentItemCode);
-    }
+    objOffersPanel.renderOfferListMarkup();
   };
   
-  objOffersPanel.getOfferListMarkup = function() {
-    var sProductCode = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
-    var objOffers = app.objModel.objEbayOffersModel.getOffersForProduct(sProductCode);
-
+  objOffersPanel.getPanelMarkup = function() {
     var sHTML = '';
     
+    sHTML += '<div id="'+objOffersPanel.sCode+'-panel">';
+    if (app.objModel.objEbayAuthorization.getStatus() === 4) {
+      sHTML += '<div id="offer-list">';
+      sHTML += '  <p>Fetching offers...</p>';
+      sHTML += '</div>';
+      sHTML += '<div id="modal-alertbox">';
+      sHTML += '  <div id="modal-alertbox-inner"></div>';
+      sHTML += '</div>';
+      sHTML += '<div id="offer-interface"></div>';
+      
+    } else {
+      sHTML += '<p>Please start with the credentials panel.</p>';
+    }
+    sHTML += '</div>';
+    
+    return sHTML;
+  };
+    
+  objOffersPanel.showMessage = function(sMessage, sMessageType) {
+    var sHTML = '';
+    sHTML += '<div id="modal-alertbox-inner" class="alert alert-'+sMessageType+'">';
+    sHTML += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+    sHTML += sMessage;
+    sHTML += '</div>';
+    
+    nsc('#modal-alertbox').html(sHTML);
+    nsc('#modal-alertbox-inner').delay(2000).slideUp(1000);
+  };
+  
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Panel specific code
+  //
+  //////////////////////////////////////////////////////////////////////////////
+  objOffersPanel.renderOfferListMarkup = function(sMarketplaceId) {
+    nsc('#offer-list').replaceWith(objOffersPanel.getOffersListMarkup());
+    objOffersPanel.setModalListeners();
+  };
+  
+  objOffersPanel.getOffersListMarkup = function() {
+    var sProductCode = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
+    var objOffers    = app.objModel.objEbayOffersModel.getOffersByProductcode(sProductCode);
+    var sHTML = '';
+
     sHTML += '<div id="offer-list">';
 
     sHTML += '<div class="panel panel-default">';
@@ -177,7 +207,7 @@ define(['jquery',
     sHTML += '    <span class="fa fa-refresh" id="offer-list-refresh" style="float:right"></span>';
     sHTML += '  </div>';
     sHTML += '  <div class="panel-body">';
-    sHTML += '    <p>Existing offers for a sku are displayed below. Click on an offer to view/amend it or create a new offer. eBay only allows a sku to exist once per marketplace.</p>';
+    sHTML += '    <p>Offers are marketplace specific.</p>';
     sHTML += '  </div>';
     sHTML += '  <table class="table table-hover table-condensed">';
     
@@ -189,7 +219,7 @@ define(['jquery',
       sHTML += '</tr>';
     }
     
-    /* Any existing offers */
+    /* Any existing policies */
     for (var nOfferID in objOffers) {
       var objOffer = objOffers[nOfferID];
       sHTML += '<tr class="offer-existing" data-offerid="'+nOfferID+'">';
@@ -202,150 +232,189 @@ define(['jquery',
     /* The chance to create a new offer */
     sHTML += '    <tr>';
     sHTML += '      <td colspan="3" align="center">';
-    sHTML += '        <button id="offer-new" class="btn btn-default" data-offerid="'+nOfferID+'">';
+    sHTML += '        <button id="offer-new" class="btn btn-default">';
     sHTML += '          <span class="fa fa-plus-circle"></span>';
-    sHTML += ' Click here to create new offering.';
+    sHTML += ' Click here to create new offer.';
     sHTML += '        </button>';
     sHTML += '      </td>';
     sHTML += '    </tr>';
     
     sHTML += '  </table>';
-    sHTML += '</div><!-- .panel -->';
+    sHTML += '</div>';
     sHTML += '</div><!-- #offer-list -->';
-    
+
     return sHTML;
   };
-    
-  objOffersPanel.getOfferDetailMarkup = function(objOffer) {
-    
-    console.log('getOfferDetailMarkup called');
-    console.log(objOffer);
-    
-    var sItemCode           = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
-    var objStoreItem        = app.objModel.objStoreCatalogueModel.getItemByCode(sItemCode);
-    var objEbayItem         = app.objModel.objEbayCatalogueModel.objItems[sItemCode];
+  
+  objOffersPanel.renderOfferInterface = function(nOfferId) {
+    nsc('#offer-interface').replaceWith(objOffersPanel.getOfferInterfaceMarkup(nOfferId));
+    objOffersPanel.setModalListeners();
+  };
+  
+  objOffersPanel.hideOfferInterface = function() {
+    var sHTML = '<div id="offer-interface"></div>';
+    nsc('#offer-interface').replaceWith(sHTML);
+  };
+  
+  objOffersPanel.getOfferInterfaceMarkup = function(nOfferId) {
+    var sProductCode        = app.objModel.objEbayCatalogueModel.nCurrentItemCode;
+    var objStoreItem        = app.objModel.objStoreCatalogueModel.getItemByCode(sProductCode);
+    var objEbayItem         = app.objModel.objEbayCatalogueModel.objItems[sProductCode];
     var objDataMappingModel = app.objModel.objDataMappings;
-
-    var sHTML        = '<div id="offer-details">';
+    var objOffer            = app.objModel.objEbayOffersModel.getOfferById(nOfferId);
     
-    /* Deal with new offer */
+    var sHTML = '';
+
+    sHTML += '<div id="offer-interface" class="panel panel-default">';
+
+    sHTML += '  <div class="panel-heading">';
+    if (nOfferId !== '') {
+      sHTML += '<h3 class="panel-title">Offer Detail for '+objStoreItem.product_name+' ('+sProductCode+')</h3>';   
+    } else {
+      sHTML += '<h3 class="panel-title">Existing Offer (#'+nOfferId+') for '+sProductCode+'</h3>';  
+    }    
+    sHTML += '  </div><!-- .panel-heading -->';
+    
+    sHTML += '  <div class="panel-body">';
+    sHTML += '    <form class="form-horizontal" id="create-offer-form">';
+    
+    sHTML += objOffersPanel.getMarketplaceMarkup(objOffer);
+
+    
+    sHTML += '      <input type="hidden" name="sku" value="'+sProductCode+'">';
+    sHTML += '      <input type="hidden" name="format" value="FIXED_PRICE">';
+    
+    sHTML += objOffersPanel.getQuantityMarkup(objStoreItem);
+    
+    sHTML += objOffersPanel.getCategoryMarkup();
+    
+    sHTML += objOffersPanel.getDescriptionMarkup(objStoreItem);
+    
+    sHTML += objOffersPanel.getFulfillmentPolicyMarkup(objOffer);
+    
+    sHTML += objOffersPanel.getPaymentPolicyMarkup(objOffer);
+    
+    sHTML += objOffersPanel.getReturnPolicyMarkup(objOffer);
+    
+    sHTML += objOffersPanel.getLocationMarkup(objOffer);
+    
+    sHTML += objOffersPanel.getPriceMarkup(sProductCode, objOffer);
+    
+    sHTML += objOffersPanel.getCurrencyMarkup();
+    
     if (objOffer === '') {
-      sHTML += '<div id="modal-alertbox"></div>';
-
-      sHTML += '<form class="form-horizontal" id="create-offer-form">';
-
       sHTML += '<div class="form-group">';
-      sHTML += '<label class="col-sm-2 control-label">Marketplace</label>';
-      sHTML += '<div class="col-sm-7">';
-      sHTML += objOffersPanel.getMarketplaceMarkup('new-offer-marketplace');
-      sHTML += '</div>';
-      sHTML += '<div class="col-sm-3">';
-      sHTML += '  <input type="text" class="form-control" id="new-offer-marketplacevalue" name="marketplaceid">';
-      sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';
-      
-      sHTML += objOffersPanel.getLocationMarkup();
-
-      sHTML += '<div class="form-group">';
-      sHTML += '<label for="item-quantity" class="col-sm-2 control-label">Quantity</label>';
-      sHTML += '<div class="col-sm-7">';
-      sHTML += objOffersPanel.getFieldsMarkup('new-offer-quantityfield', 'availability.shipToLocationAvailability.quantity', objStoreItem);
-      sHTML += '</div>';
-      sHTML += '<div class="col-sm-3">';
-      sHTML += '  <input type="text" class="form-control" id="new-offer-quantityvalue" name="quantity" value="'+objDataMappingModel.getItemDataByField('availability.shipToLocationAvailability.quantity', objStoreItem)+'">';
-      sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';
-
-      sHTML += objOffersPanel.getCategoryMarkup();
-
-      sHTML += '<div class="form-group">';
-      sHTML += '<label for="item-format" class="col-sm-2 control-label">Format</label>';
-      sHTML += '<div class="col-sm-7">';
-      sHTML += '  <input type="text" class="form-control" id="item-format" name="format" value="FIXED_PRICE" readonly>';
-      sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';    
-
-      sHTML += '<div class="form-group">';
-      sHTML += '<label for="item-description" class="col-sm-2 control-label">Description</label>';
-      sHTML += '<div class="col-sm-7">';
-      sHTML += objOffersPanel.getFieldsMarkup('descriptionfield', 'product.description', objStoreItem);
-      sHTML += '</div>';
-      sHTML += '<br>'
-      sHTML += '<div class="col-sm-offset-2 col-sm-7">';
-      sHTML += '  <textarea class="form-control" id="item-description" name="description">'+objDataMappingModel.getItemDataByField('product.description', objStoreItem)+'</textarea>';
-      sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';
-
-      sHTML += '<div class="form-group">';
-      sHTML += '<label for="item-pricecurrency" class="col-sm-2 control-label">Currency</label>';
-      sHTML += '<div class="col-sm-7">';
-      sHTML += '  <select name="currency" class="form-control">';
-      sHTML += '    <option value="USD">US Dollars</option>';
-      sHTML += '    <option value="GBP">Sterling</option>';
-      sHTML += '    <option value="CAD">Canadian Dollars</option>';
-      sHTML += '    <option value="EUR">Euros</option>';
-      sHTML += '  </select>';
-      sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';
-
-      sHTML += objOffersPanel.getPriceMarkup();
-
+      sHTML += '  <div class="col-sm-offset-2 col-sm-10">';
+      sHTML += '    <button type="button" class="btn btn-primary" id="create-ebay-offer">Create Offer</button>';
+      sHTML += '  </div>';
+      sHTML += '</div><!-- .form-group -->';
+    } else {
       sHTML += '<div class="form-group">';
       sHTML += '<div class="col-sm-offset-2 col-sm-10">';
       sHTML += '  <div class="btn-group" role="group">';
-      sHTML += '    <button type="button" class="btn btn-default" id="create-ebay-offer" data-sku="'+sItemCode+'">Create Offer</button>';
-      sHTML += '    <button type="button" class="btn btn-danger" id="delete-ebay-offer" data-sku="'+sItemCode+'">Delete Offer</button>';
-      sHTML += '    <button type="button" class="btn btn-info" id="get-listing-fee" data-sku="'+sItemCode+'">Get Listing Fee</button>';
-      sHTML += '    <button type="button" class="btn btn-primary" id="publish-offer" data-sku="'+sItemCode+'">Publish Offer</button>';
+      sHTML += '    <button type="button" class="btn btn-default" id="update-ebay-offer" data-offerid="'+nOfferId+'">Update Offer</button>';
+      sHTML += '    <button type="button" class="btn btn-default" id="delete-ebay-offer" data-offerid="'+nOfferId+'">Delete Offer</button>';
+      sHTML += '    <button type="button" class="btn btn-default" id="get-listing-fee" data-offerid="'+nOfferId+'">Get Listing Fee</button>';
+      sHTML += '    <button type="button" class="btn btn-primary" id="publish-offer" data-offerid="'+nOfferId+'">Publish Offer</button>';
       sHTML += '  </div><!-- .btn-group -->';
       sHTML += '</div>';
-      sHTML += '</div> <!-- .form-group -->';
-
-      sHTML += '</form><!-- .form-horizontal -->';
+      sHTML += '</div><!-- .form-group -->';
     }
-    sHTML += '</div><!-- #offer-details -->';
-    console.log();
-    return sHTML;
-  };
-
-  objOffersPanel.getCategoryMarkup = function() {
-    var sHTML = '';
-    sHTML += '<div class="form-group">';
-    sHTML += '<label for="item-categoryid" class="col-sm-2 control-label">Category</label>';
-    sHTML += '<div class="col-sm-7">';
-    sHTML += '  <select name="categoryid" class="form-control">';
-    sHTML += '    <option value="2545">Dungeons & Dragons</option>';
-    sHTML += '  </select>';
-    sHTML += '<p class="help-block">Select which eBay category you want to list in.</p>';
-    sHTML += '</div>';
-    sHTML += '</div> <!-- .form-group -->';
+    
+    sHTML += '    </form>';
+    sHTML += '  </div><!-- .panel-body -->';
+    sHTML += '</div><!-- #offer-interface -->';
     return sHTML;
   };
     
-  objOffersPanel.getMarketplaceMarkup = function(sElementId) {
-    if (typeof sElementId === 'undefined') {
-      sElementId = 'marketplace';
+  objOffersPanel.getMarketplaceMarkup = function(objOffer) {
+    var sMarketplaceId = '';
+    var sHTML          = '';
+    
+    /* If the offer already has a marketplace we use that, otherwise we use the
+     * marketplace currently selected in the nav bar. */
+    if (objOffer && typeof objOffer.marketplaceId !== 'undefined') {
+      sMarketplaceId = objOffer.marketplaceId;
+    } else {
+      sMarketplaceId = nsc('#marketplace-selector').val();
     }
-    var sHTML = '';
-    sHTML += '  <select id="'+sElementId+'" class="form-control input-group-sm">';
-    sHTML += '    <option value="EBAY_US">ebay.com</option>';
-    sHTML += '    <option value="EBAY_GB">ebay.co.uk</option>';
-    sHTML += '    <option value="EBAY_CA">ebay.ca</option>';
-    sHTML += '    <option value="EBAY_IE">ebay.ie</option>'; 
-    sHTML += '  </select>';
+            
+    sHTML += '<input type="hidden" name="marketplaceId" value="'+sMarketplaceId+'">';
+    
     return sHTML;
   };
-
-  objOffersPanel.getLocationMarkup = function() {
+    
+  objOffersPanel.getQuantityMarkup = function(objStoreItem) {
+    var objDataMappingModel = app.objModel.objDataMappings;
+    var sHTML               = '';
+    
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="quantity-selector" class="col-sm-2">Quantity</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += objOffersPanel.getFieldsMarkup('quantity-selector', 'availability.shipToLocationAvailability.quantity', objStoreItem);
+    sHTML += '  </div>';
+    sHTML += '  <div class="col-sm-3">';
+      sHTML += '  <input type="text" class="form-control" id="available-quantity-value" name="availableQuantity" value="'+objDataMappingModel.getItemDataByField('availability.shipToLocationAvailability.quantity', objStoreItem)+'">';
+    sHTML += '  </div>';
+    sHTML += '</div>';
+    
+    return sHTML;
+  };
+  
+  objOffersPanel.getCategoryMarkup = function() {
+    var sHTML = '';
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="item-categoryid" class="col-sm-2 control-label">Category</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += '    <select name="categoryId" class="form-control">';
+    sHTML += '      <option value="2545">Dungeons & Dragons</option>';
+    sHTML += '    </select>';
+    sHTML += '    <p class="help-block">Select which eBay category you want to list in.</p>';
+    sHTML += '  </div>';
+    sHTML += '</div> <!-- .form-group -->';
+    
+    return sHTML;
+  };
+    
+  objOffersPanel.getDescriptionMarkup = function(objStoreItem) {
+    var objDataMappingModel = app.objModel.objDataMappings;
+    var sHTML               = '';
+    
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="item-description" class="col-sm-2 control-label">Description</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += objOffersPanel.getFieldsMarkup('descriptionfield', 'product.description', objStoreItem);
+    sHTML += '  </div>';
+    sHTML += '  <br>'
+    sHTML += '  <div class="col-sm-offset-2 col-sm-10">';
+    sHTML += '    <textarea class="form-control" id="item-description" name="description" rows="4">'+objDataMappingModel.getItemDataByField('product.description', objStoreItem)+'</textarea>';
+    sHTML += '  </div>';
+    sHTML += '</div> <!-- .form-group -->';
+    
+    return sHTML;
+  };
+  
+  objOffersPanel.getLocationMarkup = function(objOffer) {
     var objLocations        = app.objModel.objLocationModel.objLocations;
     var objDataMappingModel = app.objModel.objDataMappings;
     var sDefaultLocation    = objDataMappingModel.getStoreFieldDefaultByEbayField('location');
     var sHTML = '';
     
+    /* If the current offer already has a location selected, we use that */
+    if (objOffer.merchantLocationKey !== '') {
+      sDefaultLocation = objOffer.merchantLocationKey;
+    }
+    
+    /* If we still don't have a default location we use the first */
+    for (var sLocationKey in objLocations) {
+      sDefaultLocation = sLocationKey;
+      break;
+    }
+    
     sHTML += '<div class="form-group">';
-    sHTML += '<label for="item[locationid]" class="col-sm-2 control-label">Location</label>';
-    sHTML += '<div class="col-sm-7">';
-    sHTML += '  <select id="location-dropdown" name="locationid" class="form-control">';
+    sHTML += '  <label for="location-selector" class="col-sm-2 control-label">Location</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += '    <select id="location-selector" class="form-control">';
     for (var sLocationKey in objLocations) {
       sHTML += '<option';
       sHTML += ' value="'+sLocationKey+'"';
@@ -359,10 +428,114 @@ define(['jquery',
       }
       sHTML += '</option>';
     }
-    sHTML += '  </select>';
-    sHTML += '</div>';
-    sHTML += '</div> <!-- .form-group -->';
-    sHTML += '<p class="help-block col-sm-offset-2">Select which of your stores you want to sell from.</p>';
+    sHTML += '    </select>';
+    sHTML += '  </div>';
+    sHTML += '  <div class="col-sm-3">';
+    sHTML += '    <input type="text" id="locationid-value"  class="form-control" value="'+sDefaultLocation+'" name="locationId">';
+    sHTML += '  </div>';
+    sHTML += '</div><!-- .form-group -->';
+    
+    return sHTML;
+  };
+  
+  objOffersPanel.getFulfillmentPolicyMarkup = function(objOffer) {
+    var sMarketplaceId = '';
+    if (typeof objOffer.marketplaceId !== 'undefined' && objOffer.marketplaceId.length > 0) {
+      sMarketplaceId = objOffer.marketplaceId;
+    } else {
+      sMarketplaceId = nsc('#marketplace-selector').val();
+    }
+    var objPolicies      = app.objModel.objPolicyModel.getPoliciesByMarketplace('fulfillment_policy', sMarketplaceId);
+    var objDefaultPolicy = app.objModel.objPolicyModel.getDefaultPolicy('fulfillment_policy', sMarketplaceId);
+    var sHTML            = '';
+
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="fulfillmentpolicy-selector" class="col-sm-2 control-label">Fulfillment Policy</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += '    <select id="fulfillmentpolicy-selector" class="form-control">';
+    for (var nPolicyId in objPolicies) {
+      sHTML += '<option';
+      sHTML += ' value="'+nPolicyId+'"';
+      sHTML += (nPolicyId === objDefaultPolicy.fulfillmentPolicyId) ? ' selected="selected"' : '';
+      sHTML += '>';
+      sHTML += objPolicies[nPolicyId].name;
+      sHTML += '</option>';
+    }
+    sHTML += '    </select>';
+    sHTML += '  </div>';
+    sHTML += '  <div class="col-sm-3">';
+    sHTML += '    <input type="text" id="fulfillmentpolicyid-value"  class="form-control" value="'+objDefaultPolicy.fulfillmentPolicyId+'" name="fulfillmentPolicyId">';
+    sHTML += '  </div>';
+    sHTML += '</div><!-- .form-group -->';
+    
+    return sHTML;
+  };
+  
+  objOffersPanel.getReturnPolicyMarkup = function(objOffer) {    
+    var sMarketplaceId = '';
+    if (typeof objOffer.marketplaceId !== 'undefined' && objOffer.marketplaceId.length > 0) {
+      sMarketplaceId = objOffer.marketplaceId;
+    } else {
+      sMarketplaceId = nsc('#marketplace-selector').val();
+    }
+    
+    
+    var objPolicies      = app.objModel.objPolicyModel.getPoliciesByMarketplace('return_policy', sMarketplaceId);
+    var objDefaultPolicy = app.objModel.objPolicyModel.getDefaultPolicy('return_policy', sMarketplaceId);
+    var sHTML            = '';
+    
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="returnpolicy-selector" class="col-sm-2 control-label">Return Policy</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += '    <select id="returnpolicy-selector" class="form-control">';
+    for (var sPolicyKey in objPolicies) {
+      sHTML += '<option';
+      sHTML += ' value="'+sPolicyKey+'"';
+      sHTML += (sPolicyKey === objDefaultPolicy.returnPolicyId) ? ' selected="selected"' : '';
+      sHTML += '>';
+      sHTML += objPolicies[sPolicyKey].name;
+      sHTML += '</option>';
+    }
+    sHTML += '    </select>';
+    sHTML += '  </div>';
+    sHTML += '  <div class="col-sm-3">';
+    sHTML += '    <input type="text" id="returnpolicyid-value"  class="form-control" value="'+objDefaultPolicy.returnPolicyId+'" name="returnPolicyId">';
+    sHTML += '  </div>';
+    sHTML += '</div><!-- .form-group -->';
+    
+    return sHTML;
+  };
+  
+  objOffersPanel.getPaymentPolicyMarkup = function(objOffer) {
+    var sMarketplaceId = '';
+    if (typeof objOffer.marketplaceId !== 'undefined' && objOffer.marketplaceId.length > 0) {
+      sMarketplaceId = objOffer.marketplaceId;
+    } else {
+      sMarketplaceId = nsc('#marketplace-selector').val();
+    }
+    
+    var objPolicies      = app.objModel.objPolicyModel.getPoliciesByMarketplace('payment_policy', sMarketplaceId);
+    var objDefaultPolicy = app.objModel.objPolicyModel.getDefaultPolicy('payment_policy', sMarketplaceId);
+    var sHTML            = '';
+    
+    sHTML += '<div class="form-group">';
+    sHTML += '  <label for="paymentpolicy-selector" class="col-sm-2 control-label">Payment Policy</label>';
+    sHTML += '  <div class="col-sm-7">';
+    sHTML += '    <select id="paymentpolicy-selector" class="form-control">';
+    for (var sPolicyKey in objPolicies) {
+      sHTML += '<option';
+      sHTML += ' value="'+sPolicyKey+'"';
+      sHTML += (sPolicyKey === objDefaultPolicy.paymentPolicyId) ? ' selected="selected"' : '';
+      sHTML += '>';
+      sHTML += objPolicies[sPolicyKey].name;
+      sHTML += '</option>';
+    }
+    sHTML += '    </select>';
+    sHTML += '  </div>';
+    sHTML += '  <div class="col-sm-3">';
+    sHTML += '    <input type="text" id="paymentpolicyid-value"  class="form-control" value="'+objDefaultPolicy.paymentPolicyId+'" name="paymentPolicyId">';
+    sHTML += '  </div>';
+    sHTML += '</div><!-- .form-group -->';
     
     return sHTML;
   };
@@ -403,27 +576,30 @@ define(['jquery',
 
     return sHTML;
   };
-    
-  objOffersPanel.showMessage = function(sMessage, sMessageType) {
+
+  objOffersPanel.getCurrencyMarkup = function() {
     var sHTML = '';
-    sHTML += '<div id="modal-alertbox" class="alert alert-'+sMessageType+'">';
-    sHTML += sMessage;
-    sHTML += '</div>';
     
-    nsc('#modal-alertbox').replaceWith(sHTML);
+    sHTML += '<div class="form-group">';
+    sHTML += '<label for="item-pricecurrency" class="col-sm-2 control-label">Currency</label>';
+    sHTML += '<div class="col-sm-7">';
+    sHTML += '  <select name="currency" class="form-control">';
+    sHTML += '    <option value="USD">US Dollars</option>';
+    sHTML += '    <option value="GBP">Sterling</option>';
+    sHTML += '    <option value="CAD">Canadian Dollars</option>';
+    sHTML += '    <option value="EUR">Euros</option>';
+    sHTML += '  </select>';
+    sHTML += '</div>';
+    sHTML += '</div> <!-- .form-group -->';
+
+    return sHTML;
   };
-  
+
   objOffersPanel.getFieldsMarkup = function(sFieldId, sFieldPath, objItem) {
     var objDataMappings   = app.objModel.objDataMappings;
     var objPossibleFields = app.objModel.objDataMappings.arrProductFields;
     var sDefaultField     = objDataMappings.getStoreFieldDefaultByEbayField(sFieldPath, objItem);
     var sHTML = '';
-    
-    
-    console.log('sFieldId      : '+sFieldId);
-    console.log('sFieldPath    : '+sFieldPath);
-    console.log('sDefaultField : '+sDefaultField);
-    console.log(objItem);
     
     sHTML += '<select id="'+sFieldId+'" class="form-control">';
     for (var nKey in objPossibleFields) {      
@@ -436,6 +612,14 @@ define(['jquery',
     sHTML += '</select>';
     
     return sHTML;
+  };
+  
+  objOffersPanel.setModalUpdating = function() {
+    nsc('#offer-list-refresh').removeClass().addClass('fa fa-refresh fa-spin fa-fw');
+  };
+
+  objOffersPanel.setModalFinishedUpdating = function() {
+    nsc('#offer-list-refresh').removeClass().addClass('fa fa-refresh');
   };
   
   return objOffersPanel;
