@@ -26,7 +26,7 @@ define([
     }
     
     /* Panel starts of as inactive */
-    objLocationsPanel.setInactive('Please sign in to eBay to use the locations panel');
+    objLocationsPanel.setInactive('This panel needs the credentials panel to be active');
     
     /* We only try to initialize this panel if the credentials are valid */
     if (app.objModel.objEbayAuthorization.getStatus() === 4) {
@@ -124,7 +124,7 @@ define([
       if (nCredentialsPanelStatus === 4) {
         objLocationsPanel.initialize();
       } else {
-        objLocationsPanel.setInactive('Location panel needs the credentials panel to be active');
+        objLocationsPanel.setInactive('This panel needs the credentials panel to be active');
       }
     });
 
@@ -177,7 +177,7 @@ define([
       sHTML += objLocationsPanel.getLocationListMarkup();
       sHTML += '<div id="location-form"></div>';
     } else {
-      sHTML += '<p>Please start with the credentials panel.</p>';
+      sHTML += '<p>This panel needs the credentials panel to be active</p>';
     }
     return sHTML;
   };

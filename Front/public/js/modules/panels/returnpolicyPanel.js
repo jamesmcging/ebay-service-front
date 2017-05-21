@@ -41,7 +41,7 @@ function(nsc,
         objReturnPoliciesPanel.showModal();
         objReturnPoliciesPanel.setModalListeners();
       } else {
-        objReturnPoliciesPanel.setInactive('Please sign in before using this panel');
+        objReturnPoliciesPanel.setInactive('This panel needs the credentials panel to be active');
       }
     });
     
@@ -53,7 +53,7 @@ function(nsc,
           app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('return_policy', sSelectedMarketplaceId);
         }
       } else {
-        objReturnPoliciesPanel.setInactive('Please enter your credentials');
+        objReturnPoliciesPanel.setInactive('This panel needs the credentials panel to be active');
       }
     });
     

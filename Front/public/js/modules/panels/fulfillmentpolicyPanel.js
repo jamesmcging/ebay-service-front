@@ -41,7 +41,7 @@ function(nsc,
         objFulfillmentPoliciesPanel.showModal();
         objFulfillmentPoliciesPanel.setModalListeners();
       } else {
-        objFulfillmentPoliciesPanel.setInactive('Please sign in before using this panel');
+        objFulfillmentPoliciesPanel.setInactive('This panel needs the credentials panel to be active');
       }
     });
     
@@ -53,7 +53,7 @@ function(nsc,
           app.objModel.objPolicyModel.getPoliciesByMarketplaceFromEbay('fulfillment_policy', sSelectedMarketplaceId);
         }
       } else {
-        objFulfillmentPoliciesPanel.setInactive('Please enter your credentials');
+        objFulfillmentPoliciesPanel.setInactive('This panel needs the credentials panel to be active');
       }
     });
     

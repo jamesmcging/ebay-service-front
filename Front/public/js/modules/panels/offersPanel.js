@@ -222,10 +222,17 @@ function(nsc,
     /* Any existing policies */
     for (var nOfferID in objOffers) {
       var objOffer = objOffers[nOfferID];
-      sHTML += '<tr class="offer-existing" data-offerid="'+nOfferID+'">';
+      var sClass   = 'offer-existing';
+      var sHREF    = '';
+      if (objOffers[nOfferID].status === 'PUBLISHED') {
+        sClass = 'offer-existing success';
+        sHREF  = '<a href="http://www.sandbox.ebay.com/itm/'+objOffers[nOfferID].listing.listingId+'" target="_blank"><i class="fa fa-external-link"></a>';
+      }    
+      sHTML += '<tr class="'+sClass+'"';
+      sHTML += ' data-offerid="'+nOfferID+'">';
       sHTML += '  <td>'+nOfferID+'</td>';
       sHTML += '  <td>'+objOffer.marketplaceId+'</td>';
-      sHTML += '  <td>'+objOffer.status+'</td>';
+      sHTML += '  <td>'+objOffer.status+'&nbsp'+sHREF+'</td>';
       sHTML += '</tr>';
     }
     

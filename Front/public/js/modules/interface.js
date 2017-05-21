@@ -4,7 +4,7 @@ define(['jquery',
   'modules/tabs/dashboardTab',
   'modules/tabs/storeCatalogueTab', 
   'modules/tabs/ebayCatalogueTab', 
-  'modules/tabs/ebayListingsTab', 
+  //'modules/tabs/ebayListingsTab', 
   'modules/tabs/ebayOrdersTab',
   'modules/tabs/toolsTab'
 ],
@@ -13,7 +13,7 @@ function(nsc,
   objDashboard, 
   objStoreCatalogue, 
   objEbayCatalogue, 
-  objEbayListings, 
+  //objEbayListings, 
   objEbayOrders,
   objTools
 ) {
@@ -27,7 +27,7 @@ function(nsc,
     dashboard      : objDashboard,
     storeCatalogue : objStoreCatalogue,
     ebayCatalogue  : objEbayCatalogue,
-    ebayListings   : objEbayListings,
+    //ebayListings   : objEbayListings,
     orders         : objEbayOrders,
     tools          : objTools
   };

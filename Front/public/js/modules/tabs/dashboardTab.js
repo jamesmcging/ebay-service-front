@@ -50,6 +50,9 @@ function(nsc,
     for (var sPanelCode in objDashboard.objChildPanels) {
       objDashboard.objChildPanels[sPanelCode].initialize();
     }
+    
+    /* Show an explanatory modal */
+    objDashboard.showModal();
   };
   
   objDashboard.getPanelContent = function() {
@@ -97,6 +100,41 @@ function(nsc,
 
     objDashboard.objSettings.bFirstShow = false;
 
+    return sHTML;
+  };
+  
+  objDashboard.getModalHeaderMarkup = function() {
+    var sHTML = '';
+    sHTML += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+    sHTML += '<h4 class="modal-title">Masters in Software Development @ CIT</h4>';
+    return sHTML;
+  };
+  
+  objDashboard.getModalBodyMarkup = function() {
+    var sHTML = '';
+
+    sHTML += '<p>This is a prototype offering an eBay channel in an omnichannel e-commerce solution.</p>';
+    sHTML += '<p>The prototype is set up talk to the eBay sandbox allowing a retailer to push items from their web store database to an eBay marketplace. This is a <em>thin</em> prototype designed to allow the user get an item listed and download any subsequent orders. It is not feature complete.</p>';
+    sHTML += '<p>Some knowledge of listing on ebay process is beneficial. To workflow can be summarised as follows:</p>';
+    sHTML += '<ol>';
+    sHTML += '<li>Ensure all the panels on the <em>Dashboard</em> tab are green. If any panels are red click on them and follow the instructions.</li>';
+    sHTML += '<li>On the <em>Store</em> tab push an item to eBay</li>';
+    sHTML += '<li>On the <em>eBay</em> tab create an offer from an item in the catalogue</li>';
+    sHTML += '<li>Publish an offer when you are happy with it - this can take a while</li>';
+    sHTML += '<li>You can find a link to the listing on offer list modal</li>';
+    sHTML += '</ol>';
+    sHTML += '<div class="panel panel-default">';
+    sHTML += '  <div class="panel-heading">Test Credentials</div>';
+    sHTML += '  <div class="panel-body">';
+    sHTML += '    <dl class="dl-horizontal">';
+    sHTML += '      <dt>Retailer eBay Account</dt>';
+    sHTML += '      <dd>testuser_aileen2</dd>';
+    sHTML += '      <dt>Password</dt>';
+    sHTML += '      <dd>password1!</dd>';
+    sHTML += '    </dl>';
+    sHTML += '  </div>';
+    sHTML += '</div>';
+    
     return sHTML;
   };
   

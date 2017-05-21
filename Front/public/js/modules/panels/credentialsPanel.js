@@ -79,6 +79,17 @@ define(['jquery',
       sHTML += '<p>You have authenticated with eBay, this app can now talk to eBay.</p>';
     } else {
       sHTML += '<p>You need to tell eBay to give us permission to act on your behalf. Click the sign-in button below. This will redirect you to eBay where you will be asked to give this app permission to act on your behalf. When you complete that process it will bring you back here.</p>';
+      sHTML += '<div class="panel panel-default">';
+      sHTML += '  <div class="panel-heading">Test Credentials</div>';
+      sHTML += '  <div class="panel-body">';
+      sHTML += '    <dl class="dl-horizontal">';
+      sHTML += '      <dt>Retailer eBay Account</dt>';
+      sHTML += '      <dd>testuser_aileen2</dd>';
+      sHTML += '      <dt>Password</dt>';
+      sHTML += '      <dd>password1!</dd>';
+      sHTML += '    </dl>';
+      sHTML += '  </div>';
+      sHTML += '</div>';
       sHTML += '<button class="btn btn-primary" id="ebay-sign-in">Sign in</button>';
     }
     return sHTML;
