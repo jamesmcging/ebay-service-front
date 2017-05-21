@@ -14,10 +14,11 @@ define([
     objBrands         : {},
     objThemes         : {},
     objStoreStructure : {},
-    arrItems          : [],
+    objItems          : {},
+    arrItemOrder      : [],
     sCurrencySymbol   : '€'
   };
-  
+    
   objStoreCatalogueModel.objFilters = {
     nDeptID           : 'all',
     nCatID            : 'all',
@@ -89,11 +90,15 @@ define([
     });
 
     jqxhr.done(function(responsedata) {
-      if (typeof objStoreCatalogueModel.objData.arrItems === 'undefined') {
-        objStoreCatalogueModel.objData.arrItems = [];
-      }
+      /* Reset arrItemOrder */
+      objStoreCatalogueModel.objData.arrItemOrder = [];
+
+      /* We store the items in two locations:
+       *  1. in objItems keyed on product_id
+       *  2. in arrItemOrder keyed on position as per objFilter */
       for (var i in responsedata.arrItemData) {
-        objStoreCatalogueModel.objData.arrItems.push(responsedata.arrItemData[i]);
+        objStoreCatalogueModel.objData.arrItemOrder.push(responsedata.arrItemData[i].product_id);
+        objStoreCatalogueModel.objData.objItems[responsedata.arrItemData[i].product_id] = responsedata.arrItemData[i];
       }
       objStoreCatalogueModel.objFilters.nItemCount = responsedata.nItemCount;
     });
@@ -111,77 +116,17 @@ define([
   };
   
   objStoreCatalogueModel.getItemByID = function(nProductID) {
-    var response = false;
-    for (var i = 0, nLength = app.objModel.objStoreCatalogueModel.objData.arrItems.length; i < nLength; i++) {
-      if (app.objModel.objStoreCatalogueModel.objData.arrItems[i].product_id == nProductID) {
-        return app.objModel.objStoreCatalogueModel.objData.arrItems[i]; 
-      }
+    var objItem = false;
+    if (typeof objStoreCatalogueModel.objData.objItems[nProductID] !== 'undefined') {
+      objItem = objStoreCatalogueModel.objData.objItems[nProductID];
     }
-    return response;
-  };
-    
-  //////////////////////////////////////////////////////////////////////////////
-  // The following is if we decide to use localstorage for the store catalogue//
-  //////////////////////////////////////////////////////////////////////////////
-  
-  /**
-   * Function charged with a adding a group of items to the model catalogue
-   * 
-   * @param {type} objItems
-   * @returns {undefined}
-   */
-  objStoreCatalogueModel.loadItems = function(objItems) {
-    for (var objKey in objItems) {
-      this.updateItem(objItems[objKey]);
-    }
-  };
-  
-  /**
-   * Function charged with updating an item in the model with a more up to date
-   * or a more complete version of an existing product.
-   * 
-   * @param {type} objItem
-   * @returns {undefined}
-   */
-  objStoreCatalogueModel.updateItem = function(objItem) {
-    var sStoreKey = this.sCatalogueKey + '-' + objItem['product_id'];
-    
-    /* Retrieve any stored data we have on this item */
-    var sItem = localStorage.getItem(sStoreKey);
-    if (sItem) {
-      /* localStorage only stores strings */
-      var objStoredItem = JSON.parse(sItem);
-      
-      /* update the item with the new data */
-      for (var sKey in objItem) {
-        objStoredItem[sKey] = objItem[sKey];
-      }
-      
-      objItem = objStoredItem;
-    }
-    
-    /* Add a timestamp to the item indicating when it was updated */
-    objItem.ttl = Date.now() + objStoreCatalogueModel.N_ITEM_DATA_TTL;
-    
-    /* Turn our item into a string before sticking it in local storage */
-    localStorage.setItem(sStoreKey, JSON.stringify(objItem));
-  };
-  
-  objStoreCatalogueModel.getItemById = function(nItemID) {
-    for (var i in app.objModel.objStoreCatalogueModel.objData.arrItems) {
-      if (app.objModel.objStoreCatalogueModel.objData.arrItems[i].product_id == nItemID) {        
-        return app.objModel.objStoreCatalogueModel.objData.arrItems[i];
-      }
-    }
+    return objItem;
   };
   
   objStoreCatalogueModel.getItemByCode = function(sProductCode) {
-    var arrStoreCatalogue = app.objModel.objStoreCatalogueModel.objData.arrItems;
-    for (var i = 0, nLength = arrStoreCatalogue.length; i < nLength; i++) {
-      /* Keep this as a double ==, sometimes the sProductCode is an integer and
-       * won't match with a triple === */
-      if (arrStoreCatalogue[i].product_code == sProductCode) {
-        return arrStoreCatalogue[i];
+    for (var nProductId in objStoreCatalogueModel.objData.objItems) {
+      if (objStoreCatalogueModel.objData.objItems[nProductId].product_code === sProductCode) {
+        return objStoreCatalogueModel.objData.objItems[nProductId];
       }
     }
     return false;

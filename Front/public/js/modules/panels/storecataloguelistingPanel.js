@@ -243,10 +243,13 @@ define(['jquery',
   objStoreCatalogueListingPanel.getItemListMarkup = function() {
     var sHTML = '';
 
-    if (objStoreCatalogueListingPanel.objSettings.bActive) { 
-      var arrItems = app.objModel.objStoreCatalogueModel.objData.arrItems;
-      for(var i in arrItems) {
-        sHTML += objStoreCatalogueListingPanel.getItemMarkup(arrItems[i]);
+    if (objStoreCatalogueListingPanel.objSettings.bActive) {
+      /* The item order is in objStoreCatalogueModel.objData.arrItemOrder */
+      var arrItemOrder = app.objModel.objStoreCatalogueModel.objData.arrItemOrder;
+      for(var i = 0, nLength = arrItemOrder.length; i < nLength; i++) {
+        var nProductId = arrItemOrder[i];
+        var objItem    = app.objModel.objStoreCatalogueModel.getItemByID(nProductId)
+        sHTML += objStoreCatalogueListingPanel.getItemMarkup(objItem);
       }
     } else {
       sHTML += '<p>No products.</p>';
