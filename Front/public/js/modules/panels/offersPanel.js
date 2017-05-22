@@ -262,7 +262,7 @@ function(nsc,
     sHTML += '      <td colspan="3" align="center">';
     sHTML += '        <button id="offer-new" class="btn btn-default">';
     sHTML += '          <span class="fa fa-plus-circle"></span>';
-    sHTML += ' Click here to create new offer.';
+    sHTML += ' Start a New Offer.';
     sHTML += '        </button>';
     sHTML += '      </td>';
     sHTML += '    </tr>';
