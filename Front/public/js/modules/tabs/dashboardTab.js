@@ -103,6 +103,29 @@ function(nsc,
     return sHTML;
   };
   
+  objDashboard.showModal = function() {
+    var sHTML = '';
+    
+    sHTML += '<div id="initial-modal-anchor" class="modal fade" tabindex="-1" role="dialog">';
+    sHTML += '  <div class="modal-dialog" role="document">';
+    sHTML += '    <div class="modal-content">';
+    sHTML += '      <div class="modal-header">';
+    sHTML += this.getModalHeaderMarkup();
+    sHTML += '      </div>';
+    sHTML += '      <div class="modal-body">';
+    sHTML += this.getModalBodyMarkup();
+    sHTML += '      </div>';
+    sHTML += '      <div class="modal-footer">';
+    sHTML += this.getModalFooterMarkup();
+    sHTML += '      </div>';
+    sHTML += '    </div><!-- /.modal-content -->';
+    sHTML += '  </div><!-- /.modal-dialog -->';
+    sHTML += '</div><!-- /.modal-anchor -->';
+    
+    nsc('#initial-modal-anchor').replaceWith(sHTML);
+    nsc('#initial-modal-anchor').modal('show');
+  };
+  
   objDashboard.getModalHeaderMarkup = function() {
     var sHTML = '';
     sHTML += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
@@ -129,6 +152,10 @@ function(nsc,
     sHTML += '    <dl class="dl-horizontal">';
     sHTML += '      <dt>Retailer eBay Account</dt>';
     sHTML += '      <dd>testuser_aileen2</dd>';
+    sHTML += '      <dt>Password</dt>';
+    sHTML += '      <dd>password1!</dd>';
+    sHTML += '      <dt>Shopper eBay Account</dt>';
+    sHTML += '      <dd>testuser_alaname_shopper</dd>';
     sHTML += '      <dt>Password</dt>';
     sHTML += '      <dd>password1!</dd>';
     sHTML += '    </dl>';

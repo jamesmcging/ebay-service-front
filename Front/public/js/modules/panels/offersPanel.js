@@ -44,11 +44,11 @@ function(nsc,
       objOffersPanel.setModalFinishedUpdating();
     });
     
-    nsc(document).off('offercreated').on('offercreated', function(event) {
+    nsc(document).off('offercreated').on('offercreated', function(event, nOfferId) {
       objOffersPanel.showMessage('Offer created', 'success');
       objOffersPanel.setModalFinishedUpdating();
       objOffersPanel.renderOfferListMarkup();
-      objOffersPanel.hideOfferInterface();
+      objOffersPanel.renderOfferInterface(nOfferId)
     });
     
     nsc(document).off('failedtodeleteoffer').on('failedtodeleteoffer', function(event, objData) {
@@ -75,20 +75,41 @@ function(nsc,
     });
     
     nsc(document).off('offerupdated').on('offerupdated', function(event, objResponseData) {
-      console.log(objResponseData);
-      objOffersPanel.showMessage('Offer '+objResponseData.nOfferId+' updated', 'success');
+      objOffersPanel.showMessage('Offer '+objResponseData.arrParams.nOfferId+' updated', 'success');
       objOffersPanel.setModalFinishedUpdating();
       objOffersPanel.renderOfferListMarkup();
       objOffersPanel.hideOfferInterface();
     });
     
     nsc(document).off('offerupdatefailed').on('offerupdatefailed', function(event, objResponseData) {
-      console.log(objResponseData);
       objOffersPanel.showMessage('Offer update failed', 'warning');
       objOffersPanel.setModalFinishedUpdating();
       objOffersPanel.renderOfferListMarkup();
     });    
+
+    nsc(document).off('listingfeeobtained').on('listingfeeobtained', function(event, objResponseData) {
+      objOffersPanel.showMessage('Fee fetched - the amount is irrelevent to this exercise', 'success');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+    }); 
     
+    nsc(document).off('failedtofetchfee').on('failedtofetchfee', function(event, objResponseData) {
+      objOffersPanel.showMessage('Unable to fetch fee - check the console.log', 'warning');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+    });
+
+    nsc(document).off('offerpublished').on('offerpublished', function(event, objResponseData) {
+      objOffersPanel.showMessage('Offer published', 'success');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+    });
+
+    nsc(document).off('failedtopublishoffer').on('failedtopublishoffer', function(event, objResponseData) {
+      objOffersPanel.showMessage('Failed to publish offer - check the console.log', 'warning');
+      objOffersPanel.setModalFinishedUpdating();
+      objOffersPanel.renderOfferListMarkup();
+    });
     ////////////////////////////////////////////////////////////////////////////
     //
     // Listeners attached to the offer details form
@@ -181,7 +202,7 @@ function(nsc,
     sHTML += '</div>';
     
     nsc('#modal-alertbox').html(sHTML);
-    nsc('#modal-alertbox-inner').delay(2000).slideUp(1000);
+    nsc('#modal-alertbox-inner').delay(4000).slideUp(1000);
   };
   
   //////////////////////////////////////////////////////////////////////////////

@@ -62,6 +62,18 @@ define([
     return objOffer;
   };
   
+  objEbayOffersModel.getSkuByOfferId = function(nTargetOfferId) {
+    for (var sProductCode in objEbayOffersModel.objOffers) {
+      for (var nOfferId in objEbayOffersModel.objOffers[sProductCode]) {
+        if (nTargetOfferId == nOfferId) {
+          return sProductCode;
+        }
+      }
+    }
+    
+    return false;
+  };
+  
   /* ------------------------------------------------------------------------ */
   
   objEbayOffersModel.getOffersByProductcode = function(sProductCode) {
@@ -247,7 +259,7 @@ define([
     if (objOfferData.sku !== 'undefined') {
       objData.sku = objOfferData.sku;
     } 
-    objApiInventory.updateOffer(nOfferId, objOfferData, objEbayOffersModel.updateOfferRestResponse);
+    objApiInventory.updateOffer(nOfferId, objData, objEbayOffersModel.updateOfferRestResponse);
   };
   
   objEbayOffersModel.updateOfferRestResponse = function(objResponseData, nOfferId, objParams) {
@@ -295,18 +307,9 @@ define([
     if (objData.nResponseCode === 200) {
       /* Add the listing fee somewhere useful*/
       var objFeeSummaries = objData.sResponseMessage.feeSummaries;
-      
-      
-      //add the listing fee!!!
-      
-      
-      
-
-      /* Let the app know we have got a new offer */
-      //nsc(document).trigger('listingfeeobtained', [nOfferId]);
-      
+      nsc(document).trigger('listingfeeobtained');
     } else {
-      nsc(document).trigger('failedrestcall', ['Get listing fee', objData.sResponseMessage]);
+      nsc(document).trigger('failedtofetchfee', ['Get listing fee', objData.sResponseMessage]);
     }
   };
   
@@ -316,7 +319,14 @@ define([
   };
   
   objEbayOffersModel.publishOfferRestResponse = function(objResponseData) {
-    console.log(objResponseData);
+    if (objResponseData.nResponseCode === 200) {
+      var nOfferId     = objResponseData.arrParams.nOfferId;
+      var sProductCode = objEbayOffersModel.getSkuByOfferId(nOfferId);
+      objEbayOffersModel.objOffers[sProductCode][nOfferId].status = 'PUBLISHED';
+      nsc(document).trigger('offerpublished', [objResponseData]);
+    } else {
+      nsc(document).trigger('failedtopublishoffer', [objResponseData]);
+    }
   };
   
   

@@ -344,11 +344,7 @@ function(nsc,
   objPaymentPoliciesPanel.getPolicyInterfaceMarkup = function(nPolicyId) {
     var objPolicy = app.objModel.objPolicyModel.getPolicyById('payment_policy', nPolicyId);
     var sHTML = '';
-    
-    
-    console.log(objPolicy);
-    
-    
+
     sHTML += '<div id="payment-policy-interface" class="panel panel-default">';
 
     sHTML += '  <div class="panel-heading">';
@@ -402,14 +398,16 @@ function(nsc,
     sHTML += '          </select>';
     sHTML += '        </div>';
     sHTML += '        <div class="col-sm-4">';
-    sHTML += '          <input type="text" id="payment-method-reference-type-value" class="form-control" name="referenceType" value="'+objPolicy.paymentMethods[0].recipientAccountReference.referenceType+'" readonly>';
+    var sReferenceType = (typeof objPolicy.paymentMethods[0].recipientAccountReference !== 'undefined' && typeof objPolicy.paymentMethods[0].recipientAccountReference.referenceType !== 'undefined') ? objPolicy.paymentMethods[0].recipientAccountReference.referenceType : 'PAYPAL_EMAIL';
+    sHTML += '          <input type="text" id="payment-method-reference-type-value" class="form-control" name="referenceType" value="'+sReferenceType+'" readonly>';
     sHTML += '        </div>';
     sHTML += '      </div>';
     
     sHTML += '      <div class="form-group">';
     sHTML += '        <label for="referenceId" class="col-sm-2">Reference ID</label>';
     sHTML += '        <div class="col-sm-10">';
-    sHTML += '          <input type="email" id="referenceId" class="form-control" name="referenceId" value="'+objPolicy.paymentMethods[0].recipientAccountReference.referenceId+'">';
+    var sReferenceId = (typeof objPolicy.paymentMethods[0].recipientAccountReference !== 'undefined' && typeof objPolicy.paymentMethods[0].recipientAccountReference.referenceId !== 'undefined') ? objPolicy.paymentMethods[0].recipientAccountReference.referenceId : '';
+    sHTML += '          <input type="email" id="referenceId" class="form-control" name="referenceId" value="alaname-retailer@gmail.com">';
     sHTML += '        </div>';
     sHTML += '      </div>';      
 

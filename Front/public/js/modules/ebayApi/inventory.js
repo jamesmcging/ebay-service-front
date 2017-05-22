@@ -86,7 +86,7 @@ define(['jquery', 'modules/ebayApi/restCaller'], function(nsc, objRestCaller) {
   };
   
   objInventoryApi.updateOffer = function(nOfferId, objOfferData, sCallbackFunction) {
-    // PUT https://api.ebay.com/sell/inventory/v1offer/{offer_Id}
+    // PUT https://api.ebay.com/sell/inventory/v1/offer/{offer_Id}
     this.makeCall('put', objInventoryApi.sApiName, 'offer', nOfferId, objOfferData, sCallbackFunction);
   };
   
@@ -97,7 +97,7 @@ define(['jquery', 'modules/ebayApi/restCaller'], function(nsc, objRestCaller) {
   
   objInventoryApi.publishOffer = function(nOfferId, sCallbackFunction) {
     // POST https://api.ebay.com/sell/inventory/v1/offer/{offerId}/publish
-    this.makeCall('post', objInventoryApi.sApiName, 'offer', nOfferId+'/publish', {}, sCallbackFunction);
+    this.makeCall('post', objInventoryApi.sApiName, 'offer', nOfferId+'/publish', {nOfferId: nOfferId}, sCallbackFunction);
   };  
   
   return objInventoryApi;

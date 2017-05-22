@@ -151,14 +151,14 @@ function(nsc,
     });
     
     nsc(document).off('policyupdated').on('policyupdated', function(event, objData) {
-      objReturnPoliciesPanel.showMessage('Return policy '+objData.nPolicyId+' updated', 'success');
+      objReturnPoliciesPanel.showMessage('Policy '+objData.nPolicyId+' updated', 'success');
       objReturnPoliciesPanel.setModalFinishedUpdating();
       objReturnPoliciesPanel.renderPolicyListMarkup();
       objReturnPoliciesPanel.setPanelStatus();
     });
     
     nsc(document).off('policyupdatefailed').on('policyupdatefailed', function(event) {
-      objReturnPoliciesPanel.showMessage('Return policy update failed', 'warning');
+      objReturnPoliciesPanel.showMessage('Policy update failed', 'warning');
       objReturnPoliciesPanel.setModalFinishedUpdating();
       objReturnPoliciesPanel.renderPolicyListMarkup();
       objReturnPoliciesPanel.setPanelStatus();

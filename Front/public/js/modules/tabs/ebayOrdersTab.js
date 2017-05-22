@@ -1,4 +1,13 @@
-define(['jquery', 'modules/tabs/tab'], function(nsc, objTab) {
+define([
+    'jquery', 
+    'modules/tabs/tab',
+    'modules/panels/ordersPanel'
+  ],
+  function(
+    nsc,
+    objTab,
+    objOrdersPanel
+  ) {
   
   var objOrders = {};
 
@@ -7,11 +16,25 @@ define(['jquery', 'modules/tabs/tab'], function(nsc, objTab) {
   objOrders.sName = 'Orders';
   objOrders.sCode = 'orders';
   
-  objOrders.initialize = function() {};
+  objOrders.objChildPanels = {
+    listingpanel : objOrdersPanel
+  };
   
-  objOrders.getPanelContent = function() {};
+  objOrders.getPanelContent = function() {    
+    var sHTML = '';
+    
+    for (var sPanelCode in objOrders.objChildPanels) {
+      sHTML += objOrders.objChildPanels[sPanelCode].getPanelMarkup();
+    }
+    
+    return sHTML;
+  };
   
-  objOrders.setListeners = function() {};
+  objOrders.setListeners = function() {
+    for (var sPanelCode in objOrders.objChildPanels) {
+      objOrders.objChildPanels[sPanelCode].setListeners();
+    }
+  };
   
   return objOrders;
 });

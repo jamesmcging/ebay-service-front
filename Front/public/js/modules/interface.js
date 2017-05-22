@@ -50,6 +50,7 @@ function(nsc,
 
     sHTML += '<div class="container">';
 
+    sHTML += '<div id="initial-modal-anchor"></div>';
     sHTML += '<div id="modal-anchor"></div>';
 
     sHTML += getTabMarkup();
@@ -186,7 +187,7 @@ function(nsc,
     sHTML += '</div>';
 
     nsc('#alert-div').html(sHTML);
-    nsc('#alert-inner').delay(2000).fadeOut(1000);
+    nsc('#alert-inner').delay(3000).fadeOut(1000);
   };
   
   return objInterface;

@@ -125,7 +125,8 @@ define([
   
   objStoreCatalogueModel.getItemByCode = function(sProductCode) {
     for (var nProductId in objStoreCatalogueModel.objData.objItems) {
-      if (objStoreCatalogueModel.objData.objItems[nProductId].product_code === sProductCode) {
+      /* Keep this as == not === as it needs to catch product_codes that look like numbers but are actually strings */
+      if (objStoreCatalogueModel.objData.objItems[nProductId].product_code == sProductCode) {
         return objStoreCatalogueModel.objData.objItems[nProductId];
       }
     }

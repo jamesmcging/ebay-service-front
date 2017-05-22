@@ -7,6 +7,7 @@ requirejs(['jquery',
   'modules/models/ebayCatalogueModel',
   'modules/models/ebayOffersModel',
   'modules/models/policyModel',
+  'modules/models/ebayOrdersModel',
   'bootstrap'],
   function(
     nsc,
@@ -16,7 +17,8 @@ requirejs(['jquery',
     objStoreCatalogueModel,
     objEbayCatalogueModel,
     objEbayOffersModel,
-    objPolicyModel
+    objPolicyModel,
+    objEbayOrdersModel
   ) {
   
   app = {};
@@ -45,8 +47,10 @@ requirejs(['jquery',
   
   app.objModel.objPolicyModel = objPolicyModel;
   app.objModel.objPolicyModel.initialize();
-    
-    
+  
+  app.objModel.objEbayOrdersModel = objEbayOrdersModel;
+  app.objModel.objEbayOrdersModel.initialize();  
+        
   /* Now load the interface */
   app.objInterface = objInterface;
   app.objInterface.render();

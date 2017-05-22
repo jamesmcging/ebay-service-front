@@ -14,7 +14,6 @@ define([
       newPolicy : {
         categoryTypes : {
           name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
-          default : false
         },
         description : 'Enter a short description of your return policy including: how quickly you will refund and whether you require the items before refunding. (max 250 characters)',
         extendedHolidayReturnsOffered : false,
@@ -35,12 +34,11 @@ define([
     payment_policy : {
       newPolicy : {
         name : 'An example payment policy',
-        description : 'Standard payment policy (max 250 characters)',
+        description : 'Standard payment policy Using PayPal (max 250 characters)',
         marketplaceId : 'EBAY_US',
         immediatePay : true,
         categoryTypes : {
           name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
-          default : false
         },
         paymentMethods : [
           { paymentMethodType : 'PAYPAL',
@@ -59,7 +57,6 @@ define([
         marketplaceId : 'EBAY_US',
         categoryTypes : {
           name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
-          default : false
         },
         handlingTime : {
           value : 1,
@@ -302,7 +299,6 @@ define([
             immediatePay : (objFormData.immediatePay) ? true : false,
             categoryTypes : [{
               name : 'ALL_EXCLUDING_MOTORS_VEHICLES',
-              default : false
             }],
             paymentMethods : [{
               paymentMethodType : 'PAYPAL',
@@ -381,7 +377,7 @@ define([
         objAccountApi.deletePolicy('fulfillment_policy', nPolicyId, objData, objPolicyModel.deleteFulfillmentPolicyRestResponse);
         break;
         
-      case 'fulfillment_policy' :
+      case 'payment_policy' :
         var sMarketplaceId = nsc('#marketplace-selector').val();
         var objData = {sPolicyType: sPolicyType, sMarketplaceId: sMarketplaceId, nPolicyId: nPolicyId};
         objAccountApi.deletePolicy('payment_policy', nPolicyId, objData, objPolicyModel.deletePaymentPolicyRestResponse);
