@@ -1,11 +1,15 @@
-define(['jquery', 
-  'modules/panels/panel',
-  'modules/ebayApi/inventory',
-  'modules/models/ebayCatalogueModel'
+define([
+    'jquery', 
+    'modules/panels/panel',
+    'modules/ebayApi/inventory',
+    'modules/models/ebayCatalogueModel',
+    'modules/models/ebayOrdersModel'
   ], function(nsc, 
-  objPanel,
-  objInventoryApi,
-  objEbayCatalogueModel) {
+    objPanel,
+    objInventoryApi,
+    objEbayCatalogueModel,
+    objOrdersModel
+  ) {
    
   var objSummaryPanel = {};
 
@@ -17,9 +21,9 @@ define(['jquery',
   objSummaryPanel.objChildPanels = {};
   objSummaryPanel.objSettings.nStoreSkuCount    = 'unknown';
   objSummaryPanel.objSettings.nEbaySkuCount     = objEbayCatalogueModel.getItemCount();
-  objSummaryPanel.objSettings.nEbayOfferCount   = 'unknown';
-  objSummaryPanel.objSettings.nEbayListingCount = 'unknown';
-  objSummaryPanel.objSettings.nEbayOrderCount   = 'unknown';
+//  objSummaryPanel.objSettings.nEbayOfferCount   = 'unknown';
+//  objSummaryPanel.objSettings.nEbayListingCount = 'unknown';
+  objSummaryPanel.objSettings.nEbayOrderCount   = objOrdersModel.getNewOrderCount();
   
   objSummaryPanel.initialize = function() {
     /* Ask the store for item count */
@@ -41,6 +45,7 @@ define(['jquery',
     sHTML += '</div><!-- .panel-heading -->';
     
     sHTML += '<div class="panel-body">';
+    sHTML += '  <p>This panel gives an overview of the retailer\'s local store and ebay catalogue. When eBay make it possible to download offers by marketplace this will be fleshed out to include offer count and listings count.</p>';
     sHTML += '</div><!-- .panel.body -->';
     
     sHTML += '<table class="table">';
@@ -53,17 +58,17 @@ define(['jquery',
     sHTML += '<td>eBay Sku Count</td>';
     sHTML += '<td>'+objEbayCatalogueModel.getItemCount()+'</td>';
     sHTML += '</tr>';
-    sHTML += '<tr>';
-    sHTML += '<td>eBay Offer Count</td>';
-    sHTML += '<td>'+objSummaryPanel.objSettings.nEbayOfferCount+'</td>';
-    sHTML += '</tr>';
-    sHTML += '<tr>';
-    sHTML += '<td>eBay Listing Count</td>';
-    sHTML += '<td>'+objSummaryPanel.objSettings.nEbayListingCount+'</td>';
-    sHTML += '</tr>';
+//    sHTML += '<tr>';
+//    sHTML += '<td>eBay Offer Count</td>';
+//    sHTML += '<td>'+objSummaryPanel.objSettings.nEbayOfferCount+'</td>';
+//    sHTML += '</tr>';
+//    sHTML += '<tr>';
+//    sHTML += '<td>eBay Listing Count</td>';
+//    sHTML += '<td>'+objSummaryPanel.objSettings.nEbayListingCount+'</td>';
+//    sHTML += '</tr>';
     sHTML += '<tr>';
     sHTML += '<td>eBay Order Count</td>';
-    sHTML += '<td>'+objSummaryPanel.objSettings.nEbayOrderCount+'</td>';
+    sHTML += '<td>'+objOrdersModel.getNewOrderCount()+'</td>';
     sHTML += '</tr>';    
     sHTML += '</tbody>';
     sHTML += '</table>';
@@ -80,6 +85,10 @@ define(['jquery',
     });
     
     nsc(document).on('ebayCatalogueUpdated', function() {
+      objSummaryPanel.render();
+    });
+    
+    nsc(document).on('objOrdersModel', function() {
       objSummaryPanel.render();
     });
   };

@@ -55,12 +55,14 @@ HTML;
       $arrURLs = array(
         'sStoreURL'     => \Front\interfaces\URLInterface::DEV_MAIN_URL,
         'sEbayURL'      => \Front\interfaces\URLInterface::DEV_EBAY_URL,
+        'sOrdersURL'    => \Front\interfaces\URLInterface::DEV_ORDER_URL,
         'sCatalogueURL' => \Front\interfaces\URLInterface::DEV_CATA_URL
       );
     } else {
       $arrURLs = array(
         'sStoreURL'     => \Front\interfaces\URLInterface::LIVE_MAIN_URL,
         'sEbayURL'      => \Front\interfaces\URLInterface::LIVE_EBAY_URL,
+        'sOrdersURL'    => \Front\interfaces\URLInterface::LIVE_ORDER_URL,
         'sCatalogueURL' => \Front\interfaces\URLInterface::LIVE_CATA_URL
       );
     }

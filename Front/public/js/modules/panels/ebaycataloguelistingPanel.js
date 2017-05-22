@@ -121,7 +121,7 @@ define(['jquery',
         sHTML += objEbayCatalogueListingPanel.getItemMarkup(objEbayInventory[sItemCode]);
       }
     } else {
-      sHTML = '<div class="alert alert-warning" role="alert">No eBay Items to list</div>';
+      sHTML += '<div class="alert alert-warning" role="alert">No eBay Items to list</div>';
     }
     
     return sHTML;

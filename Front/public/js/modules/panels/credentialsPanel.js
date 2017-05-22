@@ -61,7 +61,7 @@ define(['jquery',
     });
     
     nsc('#ebay-sign-in').on('click', function() {
-      window.location=app.objModel.objURLs.sEbayURL+"/authorization/access";
+      window.location = app.objModel.objURLs.sEbayURL+"/authorization/access";
     });
     
     nsc(document).on('credentialsPanelUpdated', function(event, nEbayAuthorizationStatus) {

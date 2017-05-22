@@ -11,9 +11,10 @@ define([
   
   objEbayOrdersModel.objOrders = {};
   
-  objEbayOrdersModel.nOrderCount = null;
+  objEbayOrdersModel.nNewOrderCount = null;
   
   objEbayOrdersModel.initialize = function() {};
+
 
   //////////////////////////////////////////////////////////////////////////////
   //
@@ -21,12 +22,53 @@ define([
   //
   //////////////////////////////////////////////////////////////////////////////  
   objEbayOrdersModel.getOrders = function() {
-    if (objEbayOrdersModel.nOrderCount === null) {
+    if (objEbayOrdersModel.nNewOrderCount === null) {
       objEbayOrdersModel.getUnfulfilledOrdersFromEbay();
     }
     
     return objEbayOrdersModel.objOrders;
   };
+  
+  objEbayOrdersModel.getOrderById = function(sOrderId) {
+    return objEbayOrdersModel.objOrders[sOrderId];
+  };
+  
+  objEbayOrdersModel.getNewOrderCount = function() {
+    return objEbayOrdersModel.nNewOrderCount;
+  };
+  
+  
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  //  Calls to the local DB
+  //
+  //////////////////////////////////////////////////////////////////////////////  
+  objEbayOrdersModel.sendOrderToPos = function(sOrderId, sCallbackFunction) {
+    var objParams = {
+      objOrder : objEbayOrdersModel.getOrderById(sOrderId),
+    };
+
+    var jqxhr = nsc.ajax({
+      url      : app.objModel.objURLs.sOrdersURL+'/order/'+sOrderId,
+      data     : objParams,
+      dataType : 'json',
+      type     : 'post'
+    });
+
+    jqxhr.done(function(responsedata) {
+      responsedata.bOutcome = true;
+      sCallbackFunction(responsedata);
+    });
+    
+    jqxhr.fail(function(xhr, status, errorThrown) {
+      console.log('FAIL');
+      console.log(xhr.responseText);
+      console.log(status);
+      console.log(errorThrown);
+      xhr.bOutcome = false;
+    });
+  };
+  
   
   //////////////////////////////////////////////////////////////////////////////
   //
@@ -44,9 +86,9 @@ define([
         objEbayOrdersModel.objOrders[nOrderId] = objResponseData.sResponseMessage.orders[i];
       }
       
-      objEbayOrdersModel.nOrderCount = Object.keys(objResponseData.sResponseMessage.orders).length;
+      objEbayOrdersModel.nNewOrderCount = Object.keys(objResponseData.sResponseMessage.orders).length;
     }
-    nsc(document).trigger('ordersfetched', [objEbayOrdersModel.nOrderCount]);
+    nsc(document).trigger('ordersfetched', [objEbayOrdersModel.nNewOrderCount]);
   };
   
   return objEbayOrdersModel;

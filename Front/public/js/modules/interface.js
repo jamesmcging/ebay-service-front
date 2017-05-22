@@ -29,7 +29,7 @@ function(nsc,
     ebayCatalogue  : objEbayCatalogue,
     //ebayListings   : objEbayListings,
     orders         : objEbayOrders,
-    tools          : objTools
+    //tools          : objTools
   };
   
   objInterface.render = function() {

@@ -26,8 +26,6 @@ function(nsc,
   objDashboard.sName = 'Dashboard';
   objDashboard.sCode = 'dashboard';
   
-  objDashboard.objSettings.bFirstShow = true;
-  
   objDashboard.objChildPanels = {
     summarypanel             : objSummaryPanel,
     credentialspanel         : objCredentialsPanel,
@@ -62,9 +60,7 @@ function(nsc,
     
     /* The main panel area*/
     sHTML += '<div class="col-md-8">';
-    if (objDashboard.objSettings.bFirstShow) {
-      sHTML += objDashboard.getWelcomePanelMarkup();
-    }
+    sHTML += objDashboard.getWelcomePanelMarkup();
     sHTML += objSummaryPanel.getPanelMarkup();
     sHTML += '</div><!-- .col-md-8 -->';
     
@@ -91,14 +87,12 @@ function(nsc,
       
     sHTML += '<div class="panel panel-default">';
     sHTML += '<div class="panel-heading">';
-    sHTML += '<b>Welcome</b> to your eBay management app!';
+    sHTML += 'Welcome to Alaname, your eBay management app!';
     sHTML += '</div>';
     sHTML += '<div class="panel-body">';
     sHTML += '<p>Use this dashboard to set up and manage your eBay account. Panels that are red need attention, simply click on them. Panels that are green indicate working functionality.</p>';
     sHTML += '</div>';
     sHTML += '</div>';
-
-    objDashboard.objSettings.bFirstShow = false;
 
     return sHTML;
   };
@@ -158,6 +152,10 @@ function(nsc,
     sHTML += '      <dd>testuser_alaname_shopper</dd>';
     sHTML += '      <dt>Password</dt>';
     sHTML += '      <dd>password1!</dd>';
+    sHTML += '      <dt>Shopper PayPal Account</dt>';
+    sHTML += '      <dd>testuser_alaname_shopper@gmail.com</dd>';
+    sHTML += '      <dt>Password</dt>';
+    sHTML += '      <dd>Password1!</dd>';    
     sHTML += '    </dl>';
     sHTML += '  </div>';
     sHTML += '</div>';

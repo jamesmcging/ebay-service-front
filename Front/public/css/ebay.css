@@ -189,6 +189,38 @@ td.required:after {
 }
 
 /******************************************************************************/
+/** Orders Panel                  *********************************************/
+/******************************************************************************/
+#order-list-header {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #DDD;
+  padding: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  height: 30px;
+}
+
+.order-list-order {
+  border-bottom-style: dotted;
+  border-bottom-width: 1px;
+  border-bottom-color: #DDD;
+  padding: 3px;
+  font-size: 11px;
+  min-height: 90px;
+}
+
+.order-detail-lineitem-title {
+  font-weight: bold;
+  font-size: 11px;
+  font-family: verdana,arial,helvetica,sans-serif;
+}
+
+.order-detail-sellerid {
+  padding-top: 8px
+}
+
+/******************************************************************************/
 /** Common Across Multiple Panels *********************************************/
 /******************************************************************************/
 .form-group.required label:after { 
