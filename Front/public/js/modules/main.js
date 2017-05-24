@@ -28,6 +28,9 @@ requirejs(['jquery',
   /* These are loaded into the global space by the backend on page load */
   app.objModel.objURLs = objURLs;
   
+  /* Only show the introduction splash once */
+  app.objModel.bShowIntro = true;
+  
   /* Load the following models that will be required regardless of the selected 
    * tab */
   app.objModel.objEbayAuthorization = objEbayAuthorizationModel;

@@ -50,7 +50,10 @@ function(nsc,
     }
     
     /* Show an explanatory modal */
-    objDashboard.showModal();
+    if (app.objModel.bShowIntro) {
+      objDashboard.showModal();
+      app.objModel.bShowIntro = false;
+    }
   };
   
   objDashboard.getPanelContent = function() {
@@ -62,6 +65,7 @@ function(nsc,
     sHTML += '<div class="col-md-8">';
     sHTML += objDashboard.getWelcomePanelMarkup();
     sHTML += objSummaryPanel.getPanelMarkup();
+    sHTML += '<button type="button" class="btn btn-default" id="show-intro">Show Intro</button>';
     sHTML += '</div><!-- .col-md-8 -->';
     
     /* The right hand side panel */
@@ -80,6 +84,10 @@ function(nsc,
     for (var sPanelCode in objDashboard.objChildPanels) {
       objDashboard.objChildPanels[sPanelCode].setListeners();
     }
+    
+    nsc('#show-intro').off().on('click', function() {
+      objDashboard.showModal();
+    });
   };
   
   objDashboard.getWelcomePanelMarkup = function() {
@@ -132,14 +140,21 @@ function(nsc,
 
     sHTML += '<p>This is a prototype offering an eBay channel in an omnichannel e-commerce solution.</p>';
     sHTML += '<p>The prototype is set up talk to the eBay sandbox allowing a retailer to push items from their web store database to an eBay marketplace. This is a <em>thin</em> prototype designed to allow the user get an item listed and download any subsequent orders. It is not feature complete.</p>';
-    sHTML += '<p>Some knowledge of listing on ebay process is beneficial. To workflow can be summarised as follows:</p>';
-    sHTML += '<ol>';
-    sHTML += '<li>Ensure all the panels on the <em>Dashboard</em> tab are green. If any panels are red click on them and follow the instructions.</li>';
-    sHTML += '<li>On the <em>Store</em> tab push an item to eBay</li>';
-    sHTML += '<li>On the <em>eBay</em> tab create an offer from an item in the catalogue</li>';
-    sHTML += '<li>Publish an offer when you are happy with it - this can take a while</li>';
-    sHTML += '<li>You can find a link to the listing on offer list modal</li>';
-    sHTML += '</ol>';
+    sHTML += '<p>Some knowledge of listing on ebay process is beneficial.</p>';
+    
+    sHTML += '<div class="panel panel-default">';
+    sHTML += '  <div class="panel-heading">Workflow</div>';
+    sHTML += '  <div class="panel-body">';
+    sHTML += '    <p>To workflow can be summarised as follows:</p>';
+    sHTML += '    <ol>';
+    sHTML += '    <li>Ensure all the panels on the <em>Dashboard</em> tab are green. If any panels are red click on them and follow the instructions.</li>';
+    sHTML += '    <li>On the <em>Store</em> tab push an item to eBay</li>';
+    sHTML += '    <li>On the <em>eBay</em> tab create an offer from an item in the catalogue</li>';
+    sHTML += '    <li>Publish an offer when you are happy with it - this can take a while</li>';
+    sHTML += '    <li>You can find a link to the listing on offer list modal</li>';
+    sHTML += '    </ol>';
+    sHTML += '  </div>';
+    sHTML += '</div>';
     sHTML += '<div class="panel panel-default">';
     sHTML += '  <div class="panel-heading">Test Credentials</div>';
     sHTML += '  <div class="panel-body">';
@@ -157,6 +172,19 @@ function(nsc,
     sHTML += '      <dt>Password</dt>';
     sHTML += '      <dd>Password1!</dd>';    
     sHTML += '    </dl>';
+    sHTML += '  </div>';
+    sHTML += '</div>';
+    
+    sHTML += '<div class="panel panel-default">';
+    sHTML += '  <div class="panel-heading">Code</div>';
+    sHTML += '  <div class="panel-body">';
+    sHTML += '    <p>The services that run this app can be found on GitHub at the following links. Each repo has a readme that gives an overview of the service. Each service also offers a homepage with a list of resources offered.</p>';
+    sHTML += '    <ul>';
+    sHTML += '      <li>Front-end <a href="https://github.com/jamesmcging/ebay-service-front" target="_blank">Repository on GitHub</a></li>';
+    sHTML += '      <li>Ebay Service <a href="https://github.com/jamesmcging/ebay-service-ebay" target="_blank">Repository on GitHub</a> - <a href="https://ebay.alaname.com" target="_blank">Homepage</a></li>';
+    sHTML += '      <li>Catalogue Service <a href="https://github.com/jamesmcging/ebay-service-catalogue" target="_blank">Respository on GitHub</a> - <a href="https://catalogue.alaname.com" target="_blank">Homepage</a></li>';
+    sHTML += '      <li>Orders Service <a href="https://github.com/jamesmcging/ebay-service-order" target="_blank">Respository</a> - <a href="https://order.alaname.com" target="_blank">Homepage</a></li>';
+    sHTML += '    </ul>';
     sHTML += '  </div>';
     sHTML += '</div>';
     
