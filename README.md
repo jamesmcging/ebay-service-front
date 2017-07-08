@@ -25,25 +25,25 @@ app
  |
  |---objInterface
      |---objNavTabs
-        |---dashboard
-        |   |---summaryPanel
-        |   |---credentialsPanel
-        |   |---datamappingsPanel
-        |   |---fulfillmentPolicyPanel
-        |   |---returnPolicyPanel
-        |   |---paymentPanel
-        |   |---locationsPanel
-        |
-        |---storeCatalogue
-        |   |---filtersPanel
-        |   |---listingsPanel
-        |
-        |---ebayCatalogue
-        |   |---listingsPanel
-        |
-        |---ebayListings
-        |---orders
-        |---tools
+     |---dashboard
+     |   |---summaryPanel
+     |   |---credentialsPanel
+     |   |---datamappingsPanel
+     |   |---fulfillmentPolicyPanel
+     |   |---returnPolicyPanel
+     |   |---paymentPanel
+     |   |---locationsPanel
+     |
+     |---storeCatalogue
+     |   |---filtersPanel
+     |   |---listingsPanel
+     |
+     |---ebayCatalogue
+     |   |---listingsPanel
+     |
+     |---ebayListings
+     |---orders
+     |---tools
  ```
         
 Each element is contained in a js file loaded as required by RequireJS. Each element is either a model component charged with managing the state of something, or a panel component charged with displaying the interface to the user. A panel acts as both a view and controller. It is the base object that all the interface panels inherit.
